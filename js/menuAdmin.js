@@ -1,4 +1,5 @@
 const sidebarUrl = (typeof BASE_URL !== 'undefined' ? BASE_URL : '../../') + 'components/menuAdmin/menuAdmin.html';
+
 fetch(sidebarUrl)
   .then(response => response.text())
   .then(html => {
@@ -28,7 +29,6 @@ function activarMenu() {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-
     const menuItems = document.querySelectorAll(".sidebar ul li");
     const title = document.querySelector(".top-bar span");
     const mainContent = document.querySelector(".content-padding");
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (view === "Salir") {
                 localStorage.removeItem("usuarioActivo");
-                localStorage.removeItem("authToken"); // Limpieza completa
+                localStorage.removeItem("authToken"); 
                 window.location.href = "../../pages/home/home.html";
                 return;
             }
@@ -63,10 +63,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 setTimeout(() => {
                     if (title) title.textContent = view;
+                    
+                    // 1. First, inject the HTML into the DOM
                     mainContent.innerHTML = views[view] || "<h2>Vista</h2>";
 
+                    // 2. FIX FOR ERROR 1: Now that the HTML is in the DOM, grab the button
                     if (view === "Productos") {
-                        // Enlazar el botón que abre el modal ahora que ya existe en el HTML
                         const btnOpen = document.getElementById("openModal");
                         if (btnOpen) {
                             btnOpen.onclick = () => {
@@ -75,7 +77,6 @@ document.addEventListener("DOMContentLoaded", () => {
                             };
                         }
                         
-                        // Inicializar el formulario si tienes la función inyectada en esta vista
                         if (typeof initProductLogic === 'function') {
                             initProductLogic();
                         }
@@ -88,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         mainContent.classList.remove("fade-in");
                     }, 300);
 
-                }, 200);
+                }, 200); // This delay is why the element was null before!
             }
         });
     });
