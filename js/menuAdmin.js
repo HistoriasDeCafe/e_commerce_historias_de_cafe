@@ -67,9 +67,37 @@ document.addEventListener("DOMContentLoaded", () => {
     // ================================================================
     const btnAddEstatico = document.querySelector(".btn-add");
     if (btnAddEstatico) {
-        btnAddEstatico.addEventListener("click", (e) => {
+        btnAddEstatico.addEventListener("click", async (e) => {
             e.preventDefault();
+            
+            // Abrir el modal
             abrirModal();
+
+            // Cargar el formulario HTML dinámicamente
+            try {
+                const formUrl = (typeof BASE_URL !== 'undefined' ? BASE_URL : '../../') + 'components/product/productForm.html';
+                const respuesta = await fetch(formUrl);
+                if (!respuesta.ok) throw new Error("No se pudo cargar el formulario");
+
+                const htmlFormulario = await respuesta.text();
+                const container = document.getElementById("productform-container");
+                if (container) {
+                    container.innerHTML = htmlFormulario;
+                    
+                    // Inicializar la lógica del formulario después de cargar el HTML
+                    if (typeof initProductLogic === 'function') {
+                        initProductLogic();
+                    }
+                }
+            } catch (error) {
+                console.error("Error cargando el form:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se pudo cargar el formulario de producto.',
+                    confirmButtonColor: '#532721'
+                });
+            }
         });
     }
 

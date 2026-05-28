@@ -52,7 +52,9 @@ function initProductLogic() {
     let isValid = true;
 
     // --- ENLAZAR INPUTS ---
-    const nombreInput = document.getElementById("nombre-producto") || document.getElementById("marca");
+    const nombreInput = document.getElementById("marca") || document.getElementById("nombre-producto");
+    const origenInput = document.getElementById("origen");
+    const tostadoInput = document.getElementById("tostado");
     const regionInput = document.getElementById("region");
     const imagenInput = document.getElementById("imagen");
     const stockInput = document.getElementById("stock");
@@ -64,8 +66,16 @@ function initProductLogic() {
       if (nombreInput) mostrarError(nombreInput, "El nombre del producto es obligatorio (mín. 3 caracteres)");
       isValid = false;
     }
+    if (!origenInput || origenInput.value.trim().length < 3) {
+      if (origenInput) mostrarError(origenInput, "La finca de origen es obligatoria (mín. 3 caracteres)");
+      isValid = false;
+    }
+    if (!tostadoInput || !tostadoInput.value) {
+      if (tostadoInput) mostrarError(tostadoInput, "Selecciona un tipo de tostión");
+      isValid = false;
+    }
     if (!regionInput || !regionInput.value) {
-      if (regionInput) mostrarError(regionInput, "Selecciona la categoría/región del café");
+      if (regionInput) mostrarError(regionInput, "Selecciona la región del café");
       isValid = false;
     }
     if (!imagenInput || !imagenInput.files || !imagenInput.files[0]) {
@@ -118,11 +128,13 @@ function initProductLogic() {
 
         const productoPayload = {
           name: nombreInput.value.trim(),
+          origin: origenInput ? origenInput.value.trim() : "",
+          roast: tostadoInput ? tostadoInput.value : "",
           description: descInput.value.trim(),
           price: parseFloat(precioInput.value),
           stock: parseInt(stockInput.value),
-          categoryId: Number(regionInput.value), 
-          imagen: urlPublicaImagen 
+          categoryId: Number(regionInput.value),
+          imagen: urlPublicaImagen
         };
 
         console.log("Enviando payload al backend:", productoPayload);
@@ -256,3 +268,82 @@ function eliminarProducto(id) {
     }
   });
 }
+
+// --- 3. MOSTRAR ERRORES ---
+function mostrarError(input, mensaje) {
+  input.classList.add("is-invalid");
+  const error = document.createElement("div");
+  error.className = "invalid-feedback";
+  error.textContent = mensaje;
+  input.parentElement.appendChild(error);
+
+  input.addEventListener("input", function handleInput() {
+    if (input.value.trim() !== "") {
+      input.classList.remove("is-invalid");
+      error.remove();
+      input.removeEventListener("input", handleInput);
+    }
+  });
+}
+
+// --- 4. RENDERIZAR TABLA ---
+function actualizarTabla() {
+  const tbody = document.getElementById("cuerpo-tabla");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+
+  listaProductos.forEach((prod) => {
+    const estadoActual = "Activo";
+    const badgeClass = "badge-activo";
+
+    const idReal = prod.idProduct || prod.id;
+    const nombreProd = prod.name || "Café Tradicional";
+    const precioProd = prod.price || 0;
+    const regionProd = prod.categoryName || "Región Premium";
+
+    const fila = `
+            <tr>
+                <td class="text-left">
+                  <strong>${nombreProd}</strong>
+                  <br><small style="color: #888; font-size: 0.8rem;">📍 ${regionProd}</small>
+                </td>
+                <td class="text-right"><strong>$${precioProd.toLocaleString('es-CO')}</strong></td>
+                <td class="text-right">${prod.stock} uds</td>
+                <td class="text-center">
+                    <span class="${badgeClass}">${estadoActual}</span>
+                </td>
+                <td class="text-center">
+                    <div class="actions-wrapper">
+                        <button class="btn-table-edit" title="Editar">
+                            <i class="bi bi-pencil"></i> Editar
+                        </button>
+                        <button class="btn-table-delete" title="Borrar" data-id="${idReal}" onclick="eliminarProducto(${idReal})">
+                            <i class="bi bi-trash"></i> Borrar
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    tbody.innerHTML += fila;
+  });
+}
+
+// --- 5. CARGAR PRODUCTOS DESDE BACKEND ---
+async function cargarProductosDesdeBackend() {
+  try {
+    const response = await fetch(API_URL_PRODUCTS);
+    if (!response.ok) throw new Error("No se pudieron recuperar los productos.");
+
+    const productosRecuperados = await response.json();
+    listaProductos = productosRecuperados;
+    actualizarTabla();
+  } catch (error) {
+    console.error("Error cargando productos desde la API:", error);
+  }
+}
+
+// --- 6. INICIALIZACIÓN ---
+document.addEventListener("DOMContentLoaded", () => {
+  cargarProductosDesdeBackend();
+});
