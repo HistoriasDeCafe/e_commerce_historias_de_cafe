@@ -32,7 +32,6 @@ function initProductLogic() {
     return;
   }
 
-  // Escuchar el evento directamente sobre el formulario cargado
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -53,38 +52,28 @@ function initProductLogic() {
     let isValid = true;
 
     // --- ENLAZAR INPUTS ---
-    const marcaInput = document.getElementById("marca");
-    const origenInput = document.getElementById("origen");
-    const tostadoInput = document.getElementById("tostado");
-    const regionInput = document.getElementById("region"); // Este representa tu categorie_id / id_categorie
+    const nombreInput = document.getElementById("nombre-producto") || document.getElementById("marca");
+    const regionInput = document.getElementById("region");
     const imagenInput = document.getElementById("imagen");
     const stockInput = document.getElementById("stock");
     const precioInput = document.getElementById("precio");
     const descInput = document.getElementById("descripcion");
 
     // --- VALIDACIONES ---
-    if (!marcaInput || marcaInput.value.trim().length < 3) {
-      if (marcaInput) mostrarError(marcaInput, "La marca es obligatoria (mín. 3 caracteres)");
-      isValid = false;
-    }
-    if (!origenInput || origenInput.value.trim().length < 3) {
-      if (origenInput) mostrarError(origenInput, "La finca de origen es obligatoria (mín. 3 caracteres)");
-      isValid = false;
-    }
-    if (!tostadoInput || !tostadoInput.value) {
-      if (tostadoInput) mostrarError(tostadoInput, "Selecciona un tipo de tostión");
+    if (!nombreInput || nombreInput.value.trim().length < 3) {
+      if (nombreInput) mostrarError(nombreInput, "El nombre del producto es obligatorio (mín. 3 caracteres)");
       isValid = false;
     }
     if (!regionInput || !regionInput.value) {
-      if (regionInput) mostrarError(regionInput, "Selecciona la región del café");
+      if (regionInput) mostrarError(regionInput, "Selecciona la categoría/región del café");
       isValid = false;
     }
-    if (!imagenInput || !imagenInput.files[0]) {
+    if (!imagenInput || !imagenInput.files || !imagenInput.files[0]) {
       if (imagenInput) mostrarError(imagenInput, "Debes cargar una imagen");
       isValid = false;
     }
     if (!stockInput || stockInput.value === "" || parseInt(stockInput.value) < 0) {
-      if (stockInput) mostrarError(stockInput, "Stock no válido");
+      if (stockInput) mostrarError(stockInput, "El stock no puede ser negativo");
       isValid = false;
     }
     if (!precioInput || precioInput.value === "" || parseFloat(precioInput.value) <= 0) {
@@ -92,7 +81,7 @@ function initProductLogic() {
       isValid = false;
     }
     if (!descInput || descInput.value.trim().length < 10) {
-      if (descInput) mostrarError(descInput, "Descripción demasiado corta (mín. 10 caracteres)");
+      if (descInput) mostrarError(descInput, "La descripción debe tener al menos 10 caracteres");
       isValid = false;
     }
 
@@ -107,7 +96,6 @@ function initProductLogic() {
       formData.append("file", file);
       formData.append("upload_preset", UPLOAD_PRESET);
 
-      // Deshabilitar el botón antes de arrancar los procesos asíncronos
       const btnSubmit = form.querySelector("button[type='submit']");
       if (btnSubmit) {
         btnSubmit.disabled = true;
@@ -129,15 +117,14 @@ function initProductLogic() {
         if (btnSubmit) btnSubmit.textContent = "Guardando producto en base de datos...";
 
         const productoPayload = {
-          name: marcaInput.value.trim(),
+          name: nombreInput.value.trim(),
           description: descInput.value.trim(),
           price: parseFloat(precioInput.value),
           stock: parseInt(stockInput.value),
-          categoryId: Number(regionInput.value), // 🌟 Captura limpia del valor numérico del Select
+          categoryId: Number(regionInput.value), 
           imagen: urlPublicaImagen 
         };
 
-        // Imprime en consola para asegurarte de que categoryId no vaya en null
         console.log("Enviando payload al backend:", productoPayload);
 
         // FASE C: Petición POST al Controlador de Spring Boot
@@ -153,9 +140,26 @@ function initProductLogic() {
 
         if (!response.ok) throw new Error(`El backend rechazó los datos (Error ${response.status}).`);
 
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.textContent = "Guardar Producto";
+        }
+
         form.reset();
-        modal.style.display = "none";
-        await cargarProductosDesdeBackend();
+
+        // Ocultar modal de forma segura
+        if (modal) {
+          if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            const modalInstance = bootstrap.Modal.getInstance(modal) || new bootstrap.Modal(modal);
+            modalInstance.hide();
+          } else {
+            modal.style.display = "none";
+          }
+        }
+
+        if (typeof cargarProductosDesdeBackend === 'function') {
+          await cargarProductosDesdeBackend();
+        }
 
         Swal.fire({
           icon: "success",
@@ -177,7 +181,7 @@ function initProductLogic() {
         Swal.fire({
           icon: "error",
           title: "Error al procesar",
-          text: "No se pudo registrar el producto. Verifica que los campos cumplan las validaciones del backend.",
+          text: error.message || "No se pudo registrar el producto. Verifica que los campos cumplan las validaciones del backend.",
           confirmButtonColor: "#532721"
         });
       }
@@ -227,7 +231,9 @@ function eliminarProducto(id) {
 
         if (!response.ok) throw new Error(`No se pudo eliminar el producto del servidor. Error ${response.status}.`);
 
-        await cargarProductosDesdeBackend();
+        if (typeof cargarProductosDesdeBackend === 'function') {
+          await cargarProductosDesdeBackend();
+        }
         
         Swal.fire({
           icon: 'success',
@@ -239,125 +245,14 @@ function eliminarProducto(id) {
         });
 
       } catch (error) {
-        console.error("Error al eliminar:", error);
+        console.error("Error al eliminar producto:", error);
         Swal.fire({
-          icon: "error",
-          title: "Error al eliminar",
-          text: "El backend rechazó la solicitud de eliminación.",
-          confirmButtonColor: "#532721"
+          icon: 'error',
+          title: 'Error al eliminar',
+          text: error.message || 'No se pudo completar la acción en el servidor.',
+          confirmButtonColor: '#532721'
         });
       }
     }
   });
 }
-
-// --- 3. MOSTRAR ERRORES ---
-function mostrarError(input, mensaje) {
-  input.classList.add("is-invalid");
-  const error = document.createElement("div");
-  error.className = "invalid-feedback";
-  error.textContent = mensaje;
-  input.parentElement.appendChild(error);
-
-  input.addEventListener("input", function handleInput() {
-    if (input.value.trim() !== "") {
-      input.classList.remove("is-invalid");
-      error.remove();
-      input.removeEventListener("input", handleInput);
-    }
-  });
-}
-
-// --- 4. RENDERIZAR TABLA CON TU PRODUCTRESPONSEDTO (INGLÉS) ---
-function actualizarTabla() {
-  const tbody = document.getElementById("cuerpo-tabla");
-  if (!tbody) return;
-
-  tbody.innerHTML = ""; 
-
-  listaProductos.forEach((prod) => {
-    const estadoActual = "Activo"; 
-    const badgeClass = "badge-activo";
-    
-    const idReal = prod.idProduct || prod.id; 
-    const nombreProd = prod.name || "Café Tradicional";
-    const precioProd = prod.price || 0;
-    const regionProd = prod.categoryName || "Región Premium"; 
-
-    const fila = `
-            <tr>
-                <td class="text-left">
-                  <strong>${nombreProd}</strong>
-                  <br><small style="color: #888; font-size: 0.8rem;">📍 ${regionProd}</small>
-                </td>
-                <td class="text-right"><strong>$${precioProd.toLocaleString('es-CO')}</strong></td>
-                <td class="text-right">${prod.stock} uds</td>
-                <td class="text-center">
-                    <span class="${badgeClass}">${estadoActual}</span>
-                </td>
-                <td class="text-center">
-                    <div class="actions-wrapper">
-                        <button class="btn-table-edit" title="Editar">
-                            <i class="bi bi-pencil"></i> Editar
-                        </button>
-                        <button class="btn-table-delete" title="Borrar" data-id="${idReal}" onclick="eliminarProducto(${idReal})">
-                            <i class="bi bi-trash"></i> Borrar
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        `;
-    tbody.innerHTML += fila;
-  });
-}
-
-// --- 5. MODAL (OPEN/CLOSE) ---
-const btnAdd = document.querySelector(".btn-add");
-const modal = document.getElementById("modal-producto");
-const btnClose = document.querySelector(".close-btn");
-
-if (btnAdd) {
-  btnAdd.addEventListener("click", async () => {
-    modal.style.display = "block";
-
-    try {
-      const respuesta = await fetch("../../components/product/productForm.html");
-      if (!respuesta.ok) throw new Error("No se pudo cargar el formulario");
-
-      const htmlFormulario = await respuesta.text();
-      document.getElementById("productform-container").innerHTML = htmlFormulario;
-      
-      // Inicializar la lógica directamente sobre el HTML inyectado fresco
-      initProductLogic();
-    } catch (error) {
-      console.error("Error cargando el form:", error);
-    }
-  });
-}
-
-if (btnClose) {
-  btnClose.onclick = () => (modal.style.display = "none");
-}
-
-window.onclick = (event) => {
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
-};
-
-// --- 6. PERSISTENCIA CON EL BACKEND: GET /products ---
-async function cargarProductosDesdeBackend() {
-  try {
-    const response = await fetch(API_URL_PRODUCTS);
-    if (!response.ok) throw new Error("No se pudieron recuperar los productos.");
-
-    const productosRecuperados = await response.json(); 
-    listaProductos = productosRecuperados; 
-    actualizarTabla();
-  } catch (error) {
-    console.error("Error cargando productos desde la API:", error);
-  }
-}
-
-// Ejecución inicial
-cargarProductosDesdeBackend();
