@@ -101,11 +101,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Escuchamos a la 'X' para cerrar el modal
-    const btnCerrarModal = document.querySelector(".close-btn");
-    if (btnCerrarModal) {
-        btnCerrarModal.addEventListener("click", cerrarModal);
-    }
+    // Escuchamos a la 'X' para cerrar el modal (usando event delegation)
+    document.addEventListener("click", (e) => {
+        if (e.target.classList.contains("close-btn") || e.target.closest(".close-btn")) {
+            cerrarModal();
+        }
+    });
 
     const views = {
         "Dashboard": "<h2>Dashboard</h2>",

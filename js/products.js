@@ -332,11 +332,16 @@ function actualizarTabla() {
 // --- 5. CARGAR PRODUCTOS DESDE BACKEND ---
 async function cargarProductosDesdeBackend() {
   try {
-    const response = await fetch(API_URL_PRODUCTS);
+    console.log("Cargando productos desde:", API_URL_PRODUCTS);
+    const response = await fetch(API_URL_PRODUCTS, {
+      headers: obtenerHeadersAutenticados()
+    });
     if (!response.ok) throw new Error("No se pudieron recuperar los productos.");
 
     const productosRecuperados = await response.json();
+    console.log("Productos recibidos del backend:", productosRecuperados);
     listaProductos = productosRecuperados;
+    console.log("Lista de productos actualizada:", listaProductos);
     actualizarTabla();
   } catch (error) {
     console.error("Error cargando productos desde la API:", error);
