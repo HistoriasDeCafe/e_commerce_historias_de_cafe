@@ -1,4 +1,4 @@
-// BASE_URL - Con rutas relativas en HTML, esto solo se usa para componentes dinámicos
+// BASE_URL - Se usa para cargar componentes dinámicos
 const BASE_URL = (() => {
   const isGitHubPages = window.location.hostname.includes('github.io');
   
@@ -10,9 +10,28 @@ const BASE_URL = (() => {
     return `/${repoName}/`;
   }
   
-  // Para desarrollo local - usar rutas relativas
-  console.log(`[BASE_URL] Local detectado`);
-  return '';
+  // Para desarrollo local - calcular desde la ubicación del script main.js
+  const scripts = document.querySelectorAll('script[src]');
+  for (const s of scripts) {
+    if (s.src.includes('main.js')) {
+      const scriptUrl = new URL(s.src);
+      // Si el script está en /js/main.js, la raíz es un nivel arriba
+      const pathParts = scriptUrl.pathname.split('/').filter(Boolean);
+      if (pathParts.length >= 2 && pathParts[pathParts.length - 2] === 'js') {
+        pathParts.pop(); // Remover main.js
+        pathParts.pop(); // Remover js
+        const basePath = scriptUrl.origin + '/' + pathParts.join('/') + (pathParts.length > 0 ? '/' : '');
+        console.log(`[BASE_URL] Local detectado desde script: ${basePath}`);
+        return basePath;
+      }
+      console.log(`[BASE_URL] Local fallback desde script: ${scriptUrl.origin}/`);
+      return scriptUrl.origin + '/';
+    }
+  }
+  
+  // Fallback - usar origin del documento
+  console.log(`[BASE_URL] Local fallback: ${window.location.origin}/`);
+  return window.location.origin + '/';
 })();
 
 // Hacer BASE_URL disponible globalmente para otros scripts
