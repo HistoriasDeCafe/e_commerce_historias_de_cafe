@@ -74,22 +74,25 @@ function loadComponent(containerId, relativePath, callback) {
 
 // Función para corregir rutas en componentes dinámicos
 function fixComponentPaths(container) {
+  console.log(`[fixComponentPaths] Corrigiendo rutas en container:`, container.id);
+  
   // Corregir links href
   container.querySelectorAll('a[href^="/"]').forEach(link => {
     const originalHref = link.getAttribute('href');
     if (originalHref && originalHref.startsWith('/')) {
-      link.setAttribute('href', BASE_URL + originalHref.substring(1));
-      console.log(`[fixComponentPaths] a href: ${originalHref} -> ${link.getAttribute('href')}`);
+      const newHref = BASE_URL + originalHref.substring(1);
+      link.setAttribute('href', newHref);
+      console.log(`[fixComponentPaths] a href: ${originalHref} -> ${newHref}`);
     }
   });
   
-  // Corregir imágenes
-  container.querySelectorAll('img[src^="/"]').forEach(img => {
-    const originalSrc = img.src;
-    if (originalSrc.startsWith(window.location.origin + '/')) {
-      const path = originalSrc.replace(window.location.origin + '/', '');
-      img.src = BASE_URL + path;
-      console.log(`[fixComponentPaths] img: ${originalSrc} -> ${img.src}`);
+  // Corregir imágenes - verificar el atributo src original
+  container.querySelectorAll('img').forEach(img => {
+    const originalSrc = img.getAttribute('src');
+    if (originalSrc && originalSrc.startsWith('/')) {
+      const newSrc = BASE_URL + originalSrc.substring(1);
+      img.setAttribute('src', newSrc);
+      console.log(`[fixComponentPaths] img: ${originalSrc} -> ${newSrc}`);
     }
   });
 }
