@@ -1,40 +1,18 @@
-// Calcula la ruta base desde la ubicación del script hacia la raíz del proyecto
-// main.js está en /js/, así que la raíz es un nivel arriba
+// BASE_URL - Con rutas relativas en HTML, esto solo se usa para componentes dinámicos
 const BASE_URL = (() => {
   const isGitHubPages = window.location.hostname.includes('github.io');
   
   if (isGitHubPages) {
     // En GitHub Pages, extraer el nombre del repo de la URL
-    // Formato: https://username.github.io/repo-name/pages/home/home.html
     const pathParts = window.location.pathname.split('/').filter(Boolean);
-    // El primer segmento es el nombre del repo en GitHub Pages
     const repoName = pathParts[0];
     console.log(`[BASE_URL] GitHub Pages detectado, repo: ${repoName}`);
     return `/${repoName}/`;
   }
   
-  // Para desarrollo local
-  const scripts = document.querySelectorAll('script[src]');
-  for (const s of scripts) {
-    if (s.src.includes('main.js')) {
-      const scriptUrl = new URL(s.src);
-      // Si el script está en /js/main.js, la raíz es un nivel arriba
-      const pathParts = scriptUrl.pathname.split('/').filter(Boolean);
-      if (pathParts.length >= 2 && pathParts[pathParts.length - 2] === 'js') {
-        pathParts.pop(); // Remover main.js
-        pathParts.pop(); // Remover js
-        const basePath = scriptUrl.origin + '/' + pathParts.join('/') + (pathParts.length > 0 ? '/' : '');
-        console.log(`[BASE_URL] Local detectado, path: ${basePath}`);
-        return basePath;
-      }
-      console.log(`[BASE_URL] Local fallback: ${scriptUrl.origin}/`);
-      return scriptUrl.origin + '/';
-    }
-  }
-  
-  // Fallback
-  console.log(`[BASE_URL] Fallback: /`);
-  return '/';
+  // Para desarrollo local - usar rutas relativas
+  console.log(`[BASE_URL] Local detectado`);
+  return '';
 })();
 
 // Hacer BASE_URL disponible globalmente para otros scripts
@@ -43,78 +21,6 @@ window.BASE_URL = BASE_URL;
 console.log(`[main.js] BASE_URL detectado: ${BASE_URL}`);
 console.log(`[main.js] Hostname: ${window.location.hostname}`);
 console.log(`[main.js] Pathname: ${window.location.pathname}`);
-
-// Función para corregir rutas de assets para GitHub Pages
-function fixAssetPaths() {
-  // Solo corregir si BASE_URL no es '/'
-  if (BASE_URL === '/') return;
-  
-  console.log(`[fixAssetPaths] Corrigiendo rutas de assets con BASE_URL: ${BASE_URL}`);
-  
-  // Corregir imágenes
-  document.querySelectorAll('img[src^="/"]').forEach(img => {
-    const originalSrc = img.src;
-    if (originalSrc.startsWith(window.location.origin + '/')) {
-      const path = originalSrc.replace(window.location.origin + '/', '');
-      img.src = BASE_URL + path;
-      console.log(`[fixAssetPaths] img: ${originalSrc} -> ${img.src}`);
-    }
-  });
-  
-  // Corregir videos
-  document.querySelectorAll('video source[src^="/"]').forEach(source => {
-    const originalSrc = source.src;
-    if (originalSrc.startsWith(window.location.origin + '/')) {
-      const path = originalSrc.replace(window.location.origin + '/', '');
-      source.src = BASE_URL + path;
-      console.log(`[fixAssetPaths] video source: ${originalSrc} -> ${source.src}`);
-    }
-  });
-  
-  // Corregir background-image en estilos inline
-  document.querySelectorAll('[style*="background-image"]').forEach(el => {
-    const style = el.getAttribute('style');
-    const bgMatch = style.match(/url\(['"]?\/[^'")]+['"]?\)/);
-    if (bgMatch) {
-      const originalUrl = bgMatch[0];
-      const cleanUrl = originalUrl.replace(/url\(['"]?|['"]?\)/g, '');
-      if (cleanUrl.startsWith('/')) {
-        const newUrl = `url('${BASE_URL + cleanUrl.substring(1)}')`;
-        el.setAttribute('style', style.replace(originalUrl, newUrl));
-        console.log(`[fixAssetPaths] background-image: ${originalUrl} -> ${newUrl}`);
-      }
-    }
-  });
-  
-  // Corregir links CSS
-  document.querySelectorAll('link[href^="/"]').forEach(link => {
-    const originalHref = link.href;
-    if (originalHref.startsWith(window.location.origin + '/')) {
-      const path = originalHref.replace(window.location.origin + '/', '');
-      link.href = BASE_URL + path;
-      console.log(`[fixAssetPaths] link: ${originalHref} -> ${link.href}`);
-    }
-  });
-  
-  // Corregir scripts
-  document.querySelectorAll('script[src^="/"]').forEach(script => {
-    const originalSrc = script.src;
-    if (originalSrc.startsWith(window.location.origin + '/')) {
-      const path = originalSrc.replace(window.location.origin + '/', '');
-      script.src = BASE_URL + path;
-      console.log(`[fixAssetPaths] script: ${originalSrc} -> ${script.src}`);
-    }
-  });
-  
-  // Corregir links (a href)
-  document.querySelectorAll('a[href^="/"]').forEach(link => {
-    const originalHref = link.getAttribute('href');
-    if (originalHref && originalHref.startsWith('/')) {
-      link.setAttribute('href', BASE_URL + originalHref.substring(1));
-      console.log(`[fixAssetPaths] a href: ${originalHref} -> ${link.getAttribute('href')}`);
-    }
-  });
-}
 
 function loadComponent(containerId, relativePath, callback) {
   const container = document.getElementById(containerId);
@@ -263,54 +169,26 @@ function handlePageAnimation() {
 document.addEventListener("DOMContentLoaded", () => {
   handlePageAnimation();
 
-  // Corregir rutas de assets para GitHub Pages
-  fixAssetPaths();
-
-  loadComponent("navbar-container", "components/navBar/navBar.html", () => {
-    initNavbar();
-    // Corregir rutas después de cargar navbar
-    fixAssetPaths();
-  });
-  
-  loadComponent("footer-container", "components/footer/footer.html", () => {
-    // Corregir rutas después de cargar footer
-    fixAssetPaths();
-  });
+  loadComponent("navbar-container", "components/navBar/navBar.html", initNavbar);
+  loadComponent("footer-container", "components/footer/footer.html");
 
   if (document.getElementById("register-container")) {
-    loadComponent("register-container", "components/register/register.html", () => {
-      cargarFormRegister();
-      fixAssetPaths();
-    });
+    loadComponent("register-container", "components/register/register.html", cargarFormRegister);
   }
 
   if (document.getElementById("login-container")) {
-    loadComponent("login-container", "components/login/login.html", () => {
-      inicializarLogin();
-      fixAssetPaths();
-    });
+    loadComponent("login-container", "components/login/login.html", inicializarLogin);
   }
 
   if (document.getElementById("contact-container")) {
-    loadComponent("contact-container", "components/contact/contact.html", () => {
-      cargarFormContact();
-      fixAssetPaths();
-    });
+    loadComponent("contact-container", "components/contact/contact.html", cargarFormContact);
   }
 
   loadComponent("carrito-container", "components/cart/cart.html",
-    () => {
-      if (typeof initCart === 'function') initCart();
-      else console.warn("initCart no definida");
-      fixAssetPaths();
-    }
+    (typeof initCart === 'function') ? initCart : () => console.warn("initCart no definida")
   );
 
   loadComponent("productform-container", "components/product/productForm.html",
-    () => {
-      if (typeof initProductLogic === 'function') initProductLogic();
-      else console.warn("producto no definido");
-      fixAssetPaths();
-    }
+    (typeof initProductLogic === 'function') ? initProductLogic : () => console.warn("producto no definido")
   );
 });
