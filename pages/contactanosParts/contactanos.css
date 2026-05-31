@@ -2,8 +2,7 @@
 @import url("/assets/css/paletaColores.css");
 
 body {
-    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../../assets/img/background1.jpg') center/cover;
-    background-attachment: fixed;
+    background: linear-gradient(180deg, #f5f0eb 0%, #e8ddd0 50%, #d4c4b0 100%);
     margin: 0;
     display: flex;
     flex-direction: column;
@@ -18,6 +17,89 @@ main.container {
     justify-content: center;
 }
 
+.contact-wrapper {
+    background: linear-gradient(135deg, #faf8f5 0%, #f5f0e8 100%);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(176, 141, 87, 0.2);
+}
+
+.contact-form-inner {
+    background: linear-gradient(180deg, #ffffff 0%, #faf8f5 100%);
+}
+
+.header-contact {
+    margin-bottom: 1.5rem;
+}
+
+.coffee-badge {
+    background: linear-gradient(135deg, #B08D57 0%, #8b6f47 100%);
+    color: #fff;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(176, 141, 87, 0.3);
+}
+
+.header-contact h2 {
+    color: #532721;
+    font-weight: 800;
+    margin: 0.5rem 0 0.25rem;
+}
+
+.header-contact p {
+    color: #8b7355;
+    margin: 0;
+}
+
+.form-control {
+    border: 2px solid #e8e0d5;
+    border-radius: 12px;
+    padding: 12px 16px;
+    background: #fff;
+    color: #3e2723;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #B08D57;
+    box-shadow: 0 0 0 4px rgba(176, 141, 87, 0.15);
+    background: #faf8f5;
+}
+
+.form-control::placeholder {
+    color: #a89878;
+}
+
+.form-label {
+    color: #532721;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.btnEnviar {
+    background: linear-gradient(135deg, #532721 0%, #3e1f1a 100%);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 28px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    box-shadow: 0 8px 24px rgba(83, 39, 33, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btnEnviar:hover {
+    background: linear-gradient(135deg, #6b3329 0%, #4d2620 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(83, 39, 33, 0.4);
+}
+
 .shadow-lg {
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25) !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35) !important;
 }
