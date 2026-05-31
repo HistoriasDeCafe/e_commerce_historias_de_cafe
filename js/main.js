@@ -60,12 +60,38 @@ function loadComponent(containerId, relativePath, callback) {
     .then((data) => {
       container.innerHTML = data;
       console.log(`[loadComponent] Componente cargado exitosamente: #${containerId}`);
+      
+      // Corregir rutas en el componente cargado
+      fixComponentPaths(container);
+      
       if (callback) callback();
     })
     .catch((err) => {
       console.error(`[loadComponent] Error cargando componente:`, url, err);
       container.innerHTML = `<div style="padding: 20px; color: red;">Error cargando componente: ${err.message}</div>`;
     });
+}
+
+// Función para corregir rutas en componentes dinámicos
+function fixComponentPaths(container) {
+  // Corregir links href
+  container.querySelectorAll('a[href^="/"]').forEach(link => {
+    const originalHref = link.getAttribute('href');
+    if (originalHref && originalHref.startsWith('/')) {
+      link.setAttribute('href', BASE_URL + originalHref.substring(1));
+      console.log(`[fixComponentPaths] a href: ${originalHref} -> ${link.getAttribute('href')}`);
+    }
+  });
+  
+  // Corregir imágenes
+  container.querySelectorAll('img[src^="/"]').forEach(img => {
+    const originalSrc = img.src;
+    if (originalSrc.startsWith(window.location.origin + '/')) {
+      const path = originalSrc.replace(window.location.origin + '/', '');
+      img.src = BASE_URL + path;
+      console.log(`[fixComponentPaths] img: ${originalSrc} -> ${img.src}`);
+    }
+  });
 }
 
 //  Navbar logic
