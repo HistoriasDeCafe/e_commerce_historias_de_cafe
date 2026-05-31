@@ -76,10 +76,16 @@ function loadComponent(containerId, relativePath, callback) {
 function fixComponentPaths(container) {
   console.log(`[fixComponentPaths] Corrigiendo rutas en container:`, container.id);
   
+  // Marcar container como procesado para evitar bucles
+  if (container.dataset.pathsFixed === 'true') {
+    console.log(`[fixComponentPaths] Container ya procesado, omitiendo`);
+    return;
+  }
+  
   // Corregir links href
   container.querySelectorAll('a[href^="/"]').forEach(link => {
     const originalHref = link.getAttribute('href');
-    if (originalHref && originalHref.startsWith('/')) {
+    if (originalHref && originalHref.startsWith('/') && !originalHref.startsWith(BASE_URL)) {
       const newHref = BASE_URL + originalHref.substring(1);
       link.setAttribute('href', newHref);
       console.log(`[fixComponentPaths] a href: ${originalHref} -> ${newHref}`);
@@ -89,12 +95,15 @@ function fixComponentPaths(container) {
   // Corregir imágenes - verificar el atributo src original
   container.querySelectorAll('img').forEach(img => {
     const originalSrc = img.getAttribute('src');
-    if (originalSrc && originalSrc.startsWith('/')) {
+    if (originalSrc && originalSrc.startsWith('/') && !originalSrc.startsWith(BASE_URL)) {
       const newSrc = BASE_URL + originalSrc.substring(1);
       img.setAttribute('src', newSrc);
       console.log(`[fixComponentPaths] img: ${originalSrc} -> ${newSrc}`);
     }
   });
+  
+  // Marcar como procesado
+  container.dataset.pathsFixed = 'true';
 }
 
 //  Navbar logic
