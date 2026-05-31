@@ -1,24 +1,42 @@
 // Calcula la ruta base desde la ubicación del script hacia la raíz del proyecto
 // main.js está en /js/, así que la raíz es un nivel arriba
 const BASE_URL = (() => {
+  const isGitHubPages = window.location.hostname.includes('github.io');
+  
+  if (isGitHubPages) {
+    // En GitHub Pages, extraer el nombre del repo de la URL
+    // Formato: https://username.github.io/repo-name/
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    const repoName = pathParts[0]; // El primer segmento es el nombre del repo
+    return `/${repoName}/`;
+  }
+  
+  // Para desarrollo local
   const scripts = document.querySelectorAll('script[src]');
   for (const s of scripts) {
     if (s.src.includes('main.js')) {
-      return s.src.replace(/js\/main\.js.*$/, '');
+      const scriptUrl = new URL(s.src);
+      // Si el script está en /js/main.js, la raíz es un nivel arriba
+      const pathParts = scriptUrl.pathname.split('/').filter(Boolean);
+      if (pathParts.length >= 2 && pathParts[pathParts.length - 2] === 'js') {
+        pathParts.pop(); // Remover main.js
+        pathParts.pop(); // Remover js
+        return scriptUrl.origin + '/' + pathParts.join('/') + (pathParts.length > 0 ? '/' : '');
+      }
+      return scriptUrl.origin + '/';
     }
   }
-  // Fallback: calcular desde la URL de la página actual
-  const depth = window.location.pathname.split('/').filter(Boolean).length;
-  const repoName = window.location.pathname.split('/').filter(Boolean)[0];
-  const isGitHubPages = window.location.hostname.includes('github.io');
-  if (isGitHubPages) {
-    return `/${repoName}/`;
-  }
+  
+  // Fallback
   return '/';
 })();
 
 // Hacer BASE_URL disponible globalmente para otros scripts
 window.BASE_URL = BASE_URL;
+
+console.log(`[main.js] BASE_URL detectado: ${BASE_URL}`);
+console.log(`[main.js] Hostname: ${window.location.hostname}`);
+console.log(`[main.js] Pathname: ${window.location.pathname}`);
 
 function loadComponent(containerId, relativePath, callback) {
   const container = document.getElementById(containerId);
@@ -27,13 +45,24 @@ function loadComponent(containerId, relativePath, callback) {
   // Construir URL absoluta desde la raíz del proyecto
   const url = BASE_URL + relativePath;
 
+  console.log(`[loadComponent] Cargando: ${url} en #${containerId}`);
+
   fetch(url)
-    .then((res) => res.text())
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+      return res.text();
+    })
     .then((data) => {
       container.innerHTML = data;
+      console.log(`[loadComponent] Componente cargado exitosamente: #${containerId}`);
       if (callback) callback();
     })
-    .catch((err) => console.error("Error cargando componente:", url, err));
+    .catch((err) => {
+      console.error(`[loadComponent] Error cargando componente:`, url, err);
+      container.innerHTML = `<div style="padding: 20px; color: red;">Error cargando componente: ${err.message}</div>`;
+    });
 }
 
 //  Navbar logic
