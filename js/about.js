@@ -4,7 +4,7 @@ const equipo = [
     nombre: "Maira Alejandra Pinilla",
     rol: "Full Stack & Scrum Master",
     descripcion: "Apasionada por crear experiencias digitales únicas combinando diseño y tecnología.",
-    foto: "/assets/img/PerfilAle.png",
+    foto: window.BASE_URL ? window.BASE_URL + "assets/img/PerfilAle.png" : "../../assets/img/PerfilAle.png",
     linkedin: "https://www.linkedin.com/in/maira-alejandra-pinilla-pinilla-ingenieria-de-sistemas-desarrolladora/",
     github: "https://github.com/Malejandrapin",
     portfolio: "https://malejandrapin.github.io/Alejandra-Pinilla-Portafolio/"
@@ -13,7 +13,7 @@ const equipo = [
     nombre: "Andrés Díaz Figueroa",
     rol: "Java Full Stack Junior",
     descripcion: "Apasionado por la tecnología, el desarrollo de software y la arquitectura cloud.",
-    foto: "/assets/img/fotoAndres-removebg-preview.png",
+    foto: window.BASE_URL ? window.BASE_URL + "assets/img/fotoAndres-removebg-preview.png" : "../../assets/img/fotoAndres-removebg-preview.png",
     linkedin: "https://www.linkedin.com/in/andres-diaz-figueroa-tecnology-innovation-developer-cloud/",
     github: "https://github.com/andresdiazf",
     portfolio: "https://myportfolio-andres-diaz-figueroa.vercel.app/"
@@ -22,7 +22,7 @@ const equipo = [
     nombre: "Didier Cuan Najas",
     rol: "Full Stack Developer",
     descripcion: "Analista y desarrollador apasionado por tecnología backend y frontend.",
-    foto: "/assets/img/fotoDidier .png",
+    foto: window.BASE_URL ? window.BASE_URL + "assets/img/fotoDidier .png" : "../../assets/img/fotoDidier .png",
     linkedin: "https://www.linkedin.com/in/didier-alexis-cuan-najas-developer-full-stack/",
     github: "https://github.com/didierNajas",
     portfolio: "https://didiernajas.github.io/Basic-portafolio/"
@@ -31,7 +31,7 @@ const equipo = [
     nombre: "Zully Tamayo Martinez",
     rol: "Ingeniera Informática y Desarrolladora",
     descripcion: "Apasionada por construir soluciones eficientes y lógica de backend robusta.",
-    foto: "/assets/img/fotoZully.png",
+    foto: window.BASE_URL ? window.BASE_URL + "assets/img/fotoZully.png" : "../../assets/img/fotoZully.png",
     linkedin: "https://www.linkedin.com/in/zully-tamayo-martinez-softwaredeveloper",
     github: "https://github.com/zullytamayom",
     portfolio: "https://phenomenal-eclair-9360d4.netlify.app/"
