@@ -12,31 +12,31 @@ const Validators = {
 
 function mostrarError(input, mensaje) {
     input.classList.add("is-invalid");
-    const errorDiv = document.createElement("div");
-    errorDiv.className = "invalid-feedback";
-    errorDiv.innerText = mensaje;
-    input.parentElement.appendChild(errorDiv);
+    const errorDiv = input.parentElement.querySelector(".invalid-feedback");
+    if (errorDiv) {
+        errorDiv.innerText = mensaje;
+    }
 }
+
 // Validación del formulario contactanos — solo si existe en esta página
 function cargarFormContact() {
-  // 1. Buscamos el formulario dentro del contenedor con ID 'form'
-  const form = document.querySelector('#contact-container form');
+  const form = document.getElementById('contact-form');
 
   if (!form) {
-    console.warn("No se encontró el formulario dentro del contenedor #contact-container.");
+    console.warn("No se encontró el formulario con ID 'contact-form'.");
     return;
   }
 
-  form.addEventListener("submit", function (event) {
+  form.addEventListener("submit", async function (event) {
     event.preventDefault();
 
     // Limpiar errores previos
-    form.querySelectorAll(".invalid-feedback").forEach((el) => el.remove());
+    form.querySelectorAll(".invalid-feedback").forEach((el) => el.innerText = "");
     form.querySelectorAll(".is-invalid").forEach((el) => el.classList.remove("is-invalid"));
 
     let isValid = true;
 
-    // 2. Buscamos los inputs DENTRO del formulario (más seguro que getElementById global)
+    // Buscamos los inputs DENTRO del formulario
     const nombreInput = form.querySelector("#name");
     const emailInput = form.querySelector("#email");
     const telefonoInput = form.querySelector("#number");
@@ -52,7 +52,7 @@ function cargarFormContact() {
     } else if (!nombreValid.minLength) {
       mostrarError(nombreInput, "Mínimo 3 caracteres");
       isValid = false;
-    } else if (!/^[a-zA-Z\s]+$/.test(nombreVal)) {
+    } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(nombreVal)) {
       mostrarError(nombreInput, "Solo letras y espacios");
       isValid = false;
     }
@@ -68,9 +68,9 @@ function cargarFormContact() {
       isValid = false;
     }
 
-    // Teléfono
+    // Teléfono (opcional)
     const telefonoVal = telefonoInput.value.trim();
-    if (telefonoVal.length < 10 || !/^[0-9+\s]+$/.test(telefonoVal)) {
+    if (telefonoVal && (telefonoVal.length < 10 || !/^[0-9+\s]+$/.test(telefonoVal))) {
       mostrarError(telefonoInput, "Teléfono inválido (mín. 10 dígitos)");
       isValid = false;
     }
@@ -81,13 +81,55 @@ function cargarFormContact() {
       mostrarError(mensajeInput, "El mensaje no puede estar vacío");
       isValid = false;
     } else if (mensajeVal.length < 10) {
-      mostrarError(mensajeInput, "Mensaje demasiado corto");
+      mostrarError(mensajeInput, "Mensaje demasiado corto (mín. 10)");
       isValid = false;
     }
 
     if (isValid) {
-      console.log("¡Formulario validado con éxito!");
-      form.submit();
+      try {
+        // Enviar a Formspree usando fetch
+        const formData = {
+          name: nombreVal,
+          email: emailVal,
+          number: telefonoVal,
+          message: mensajeVal
+        };
+
+        const response = await fetch('https://formspree.io/f/xlgajpkq', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+          // Mostrar SweetAlert profesional con tema de café
+          Swal.fire({
+            title: '¡Mensaje Recibido!',
+            text: 'Gracias por contactarnos. Tu mensaje ha sido recibido como una taza recién preparada. Te responderemos pronto con el mismo cuidado que ponemos en cada grano de café.',
+            icon: 'success',
+            confirmButtonText: 'Excelente',
+            confirmButtonColor: '#532721',
+            background: '#fdfcfb',
+            color: '#532721'
+          });
+
+          // Limpiar formulario tras éxito
+          form.reset();
+        } else {
+          throw new Error('Error al enviar el mensaje');
+        }
+      } catch (error) {
+        Swal.fire({
+          title: '¡Ups!',
+          text: 'Hubo un problema al enviar tu mensaje. Por favor, inténtalo de nuevo, como cuando se prepara una taza perfecta.',
+          icon: 'error',
+          confirmButtonText: 'Intentar de nuevo',
+          confirmButtonColor: '#532721'
+        });
+      }
     }
   });
 }

@@ -1,123 +1,97 @@
+@import url("../../assets/css/paletaColores.css");
+
+/* ==================== CATALOG MAIN ==================== */
+.catalog-main {
+  min-height: 100vh;
+  padding: 160px 20px 60px;
+  background: linear-gradient(180deg, #f5f0eb 0%, #e8ddd0 100%);
+}
+
+.catalog-header {
+  text-align: center;
+  margin-bottom: 50px;
+  padding: 0 20px;
+}
+
+.title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  color: var(--color-primary, #532721);
+  margin: 0 0 15px 0;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--color-secondary, #B08D57);
+  font-weight: 500;
+  margin: 0;
+  letter-spacing: 0.3px;
+}
+
+/* ==================== GRID CONTAINER ==================== */
 .grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 30px;
-    padding: 20px 0;
-    margin: 0 25px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 25px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
-
-.card {
-    border: 1px solid #e0e0e0; 
-    border-radius: 12px;
-    padding: 0; 
-    background-color: #fff;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    overflow: hidden;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+/* ==================== LOADING STATE ==================== */
+.loading-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--color-primary, #532721);
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(83, 39, 33, 0.1);
+  border-top: 4px solid var(--color-primary, #532721);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
 }
 
-
-.image-placeholder {
-    width: 100%;
-    height: 220px; 
-    background-color: #f8f5f2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 15px;
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-.card img {
-    max-width: 100%;
-    height: 100%;
-    object-fit: contain;
-    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
+.loading-state p {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 0;
 }
 
-
-.card-content {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+  .catalog-main {
+    padding: 100px 15px 40px;
+  }
+  
+  .catalog-header {
+    margin-bottom: 35px;
+  }
+  
+  .grid-container {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 20px;
+    padding: 0 10px;
+  }
 }
 
-.card-content h3 {
-    font-size: 18.4px; 
-    margin: 0 0 5px 0;
-    color: #2c1a0f;
-    font-weight: 700;
-}
-
-.finca {
-    font-size: 0.85rem;
-    color: #6d4c41;
-    margin-bottom: 8px;
-    font-weight: 600;
-}
-
-.stars {
-    color: #f1c40f;
-    font-size: 0.8rem;
-    margin-bottom: 10px;
-}
-
-.description {
-    font-size: 13.6px;
-    color: #555;
-    line-height: 1.4;
-    margin-bottom: 15px;
-    /* para limitar el número de líneas */
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.price {
-    font-weight: 800;
-    font-size: 1.25rem;
-    color: #1a1a1a;
-    padding-bottom: 15px;
-}
-
-.card-buttons {
-    display: flex;
-    flex-direction: column; 
-    gap: 8px;
-}
-
-.btn-cart, .btn-detail {
-    width: 100%;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    font-size: 0.75rem;
-    border-radius: 6px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    transition: opacity 0.2s;
-}
-
-.btn-cart {
-    background-color: #3e2723; 
-    color: white;
-}
-
-.btn-detail {
-    background-color: #f0f0f0;
-    color: #333;
-}
-
-.btn-cart:hover, .btn-detail:hover {
-    opacity: 0.9;
+@media (max-width: 480px) {
+  .grid-container {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+  }
 }

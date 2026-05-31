@@ -1,5 +1,4 @@
 
-@import url('https://googleapis.com');
 @import url("../../assets/css/paletaColores.css");
 
 :root {
@@ -41,22 +40,21 @@ body {
   left: 0;
   width: 100%;
   z-index: 1000;
-  background: #ffffff;
-  border-bottom: 1px solid var(--color-border-default);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid var(--color-border-default);
+  box-shadow: 0 4px 20px rgba(83, 39, 33, 0.08);
 }
 
 .nav-custom-full {
-  max-width: 1400px;
-  margin: auto 55px;
-  min-height: 100px;
-  /* <Agrandar la barra para tener espacio */
+  position: relative;
+  width: 100%;
+  margin: 0;
+  min-height: 110px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 5%;
-  gap: 15px;
-  flex-wrap: wrap;
-
+  padding: 0 40px;
 }
 
 /* ---- El Logo --- */
@@ -84,22 +82,26 @@ body {
 }
 
 .link3 {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--color-text-default);
   text-decoration: none;
-  padding: 0 15px;
-  height: 100%;
+  padding: 12px 24px;
   display: flex;
   align-items: center;
-  font-weight: 500;
-  transition: 0.2s;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-bottom: 3px solid transparent;
+  cursor: pointer;
+  border-radius: 8px;
 }
 
 .link3:hover,
 .link3.active3 {
   color: var(--color-primary);
   border-bottom-color: var(--color-primary);
+  background: rgba(176, 141, 87, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(176, 141, 87, 0.15);
 }
 
 .brand-text {
@@ -117,56 +119,57 @@ body {
   white-space: nowrap;
 }
 
-/* Recuadros de Botones carrito y usuario--- */
+/* --- ACCIONES DERECHA (Carrito + Login) --- */
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 24px;
 }
 
-/* ELIMINAR LOS RECUADROS POR DEFECTO DE BOOTSTAP */
 .icon-btn3 {
   border: none !important;
-  /* <--- Quita el borde (crítico) */
-  background: transparent !important;
-  /* <--- Quita el fondo gris (crítico) */
-  outline: none !important;
-  /* <--- Quita el resalte al hacer click */
-  box-shadow: none !important;
-  /* <--- Quita sombras adicionales de Bootstrap */
-
-  /* Ajustes de tamaño del icono */
-  width: 42px;
-  height: 42px;
+  background: rgba(176, 141, 87, 0.1) !important;
+  box-shadow: 0 2px 8px rgba(176, 141, 87, 0.15) !important;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
-  /* Hover circular */
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--color-primary);
   cursor: pointer;
-  font-size: 20px;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  padding: 0;
 }
 
-/* Nuevo efecto hover suave para botones limpios */
 .icon-btn3:hover {
-  background-color: var(--color-highlight);
-  /* Un suave tono dorado */
-  color: var(--color-primary-active);
+  background-color: var(--color-secondary) !important;
+  color: white !important;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 4px 12px rgba(176, 141, 87, 0.3) !important;
 }
 
-/* -- Badge Dot (Verde Oliva) -- */
+.carrito-icon {
+  width: 26px;
+  height: 26px;
+}
+
 .badge-dot3 {
-  background-color: var(--color-accent);
-      color: var(--color-background);
-      padding: 2px 8px;
-      border-radius: 50%;
-      font-size: 12px;
-      position: absolute;
-      top: -10px;
-      right: -9px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-active) 100%);
+  color: white;
+  padding: 5px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  box-shadow: 0 3px 10px rgba(83, 39, 33, 0.4);
+  border: 2px solid white;
+  min-width: 20px;
+  text-align: center;
+  letter-spacing: 0.5px;
 }
 @keyframes rebote-badge-dot3 {
   0% { transform: scale(1); }
@@ -192,6 +195,118 @@ body {
 
 .cta-primary:hover {
   background: var(--color-primary-active);
+}
+
+/* --- USER AUTH WRAPPER --- */
+.user-auth-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-left: 24px;
+  border-left: 2px solid var(--color-border-default);
+  background: linear-gradient(135deg, rgba(176, 141, 87, 0.08) 0%, rgba(176, 141, 87, 0.03) 100%);
+  padding: 12px 24px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  min-width: 280px;
+}
+
+.user-auth-wrapper:hover {
+  background: linear-gradient(135deg, rgba(176, 141, 87, 0.12) 0%, rgba(176, 141, 87, 0.05) 100%);
+  box-shadow: 0 4px 12px rgba(176, 141, 87, 0.15);
+}
+
+.user-avatar-section {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+}
+
+.avatar-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(176, 141, 87, 0.3);
+}
+
+.usuario-icon-nav {
+  width: 22px;
+  height: 22px;
+  filter: brightness(0) invert(1);
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.user-greeting {
+  font-size: 0.75rem;
+  color: rgba(26, 26, 26, 0.6);
+  font-weight: 500;
+}
+
+.user-name {
+  font-size: 0.95rem;
+  color: var(--color-primary);
+  font-weight: 700;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  white-space: nowrap;
+}
+
+.login-btn {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-active) 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(83, 39, 33, 0.25);
+}
+
+.login-btn:hover {
+  background: linear-gradient(135deg, var(--color-primary-active) 0%, #2a0f0d 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(83, 39, 33, 0.35);
+}
+
+.logout-btn {
+  background: transparent;
+  border: 2px solid var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+
+.logout-btn:hover {
+  background: var(--color-primary) !important;
+  color: white !important;
+  transform: translateY(-2px);
+}
+
+.admin-link {
+  color: var(--color-accent) !important;
+  font-weight: 700;
+}
+
+.admin-link:hover {
+  color: var(--color-primary) !important;
 }
 
 
@@ -346,17 +461,29 @@ body {
   transform: rotate(-45deg) translate(6px, -6px);
 }
 
-@media (max-width: 991.98px) {
-  .nav-custom-full {
-    margin: auto 16px;
-    padding: 10px 14px;
-    min-height: auto;
+/* --- MAGIA DEL CENTRADO EN ESCRITORIO --- */
+@media (min-width: 992px) {
+  .collapse.navbar-collapse {
+    display: flex !important;
+    justify-content: flex-end;
     align-items: center;
-    justify-content: space-between;
   }
 
-  .navbar-toggler {
-    margin-left: auto;
+  .navbar-nav {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+  }
+}
+
+/* --- RESPONSIVE (MÓVIL Y TABLET) --- */
+@media (max-width: 991.98px) {
+  .nav-custom-full {
+    padding: 10px 20px;
+    min-height: auto;
   }
 
   .collapse.navbar-collapse {
@@ -370,43 +497,30 @@ body {
 
   .collapse.navbar-collapse.show {
     opacity: 1;
-    max-height: 640px;
+    max-height: 700px;
     padding-top: 10px;
   }
 
-  .navbar-nav.mx-auto {
+  .navbar-nav {
     display: flex;
-    width: 100%;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    gap: 8px;
-    margin: 8px auto 0;
-  }
-
-  .navbar-nav.mx-auto .nav-link {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    padding: 8px 0;
     width: 100%;
-    max-width: 320px;
-    text-align: center;
-    transition: transform 0.2s ease, color 0.2s ease;
+    gap: 8px;
+    margin-top: 10px;
   }
 
-  .navbar-nav.mx-auto .nav-link:hover {
-    color: var(--color-primary);
-    transform: scale(1.02);
+  .navbar-nav .nav-link {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
   }
 
   .nav-actions {
     width: 100%;
     justify-content: center;
-    margin-top: 10px;
-    flex-wrap: wrap;
-    gap: 10px;
+    margin-top: 15px;
+    flex-direction: column;
+    gap: 15px;
   }
 
   .user-auth-wrapper {
@@ -414,71 +528,19 @@ body {
     justify-content: center;
     padding-left: 0;
     border-left: none;
-    border-top: 1px solid rgba(176, 141, 87, 0.16);
-    padding-top: 10px;
-    margin-top: 10px;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .icon-btn3 {
-    margin-right: 0;
-  }
-}
-
-/* --- SECCIÓN DE USUARIO DINÁMICA */
-
-.user-auth-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding-left: 15px;
-    /* Cambiamos el borde a uno oscuro para que se vea en el fondo blanco */
-    border-left: 1px solid var(--color-border-default); 
-}
-
-.usuario-icon-nav {
-    width: 24px;
-    height: 24px;
-    /* Quitamos el invert(1) para que el icono se vea oscuro/café */
-    filter: brightness(0.3); 
-}
-
-/* El mensaje de "Hola, Usuario" en color oscuro */
-.welcome-msg {
-    color: var(--color-text-default);
-    font-size: 0.8rem;
-    display: flex;
+    border-top: 1px solid rgba(176, 141, 87, 0.2);
+    padding-top: 15px;
     flex-direction: column;
-    line-height: 1.2;
-}
+  }
 
-.welcome-msg strong {
-    font-size: 0.9rem;
-    color: var(--color-primary); /* Color café para el nombre */
-}
+  .user-avatar-section {
+    width: 100%;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+  }
 
-/* Estilo del botón cuando dice "Salir" (Botón minimalista) */
-.btn-logout {
-    background-color: transparent !important;
-    border: 1px solid var(--color-primary) !important;
-    color: var(--color-primary) !important;
-    font-size: 0.7rem !important;
-    padding: 4px 10px !important;
-    text-transform: uppercase;
-}
-
-.btn-logout:hover {
-    background-color: var(--color-primary) !important;
-    color: white !important;
-}
-
-/* Ajuste para móviles */
-@media (max-width: 992px) {
-    .user-auth-wrapper {
-        border-left: none;
-        padding-left: 0;
-        margin-top: 15px;
-        justify-content: center;
-    }
+  .user-info {
+    text-align: center;
+  }
 }

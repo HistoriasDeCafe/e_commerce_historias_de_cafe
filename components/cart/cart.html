@@ -1,39 +1,54 @@
 <link rel="stylesheet" href="../../components/cart/cart.css">
 
+<!-- Fondo oscuro detrás del carrito -->
 <div id="carrito-overlay" class="carrito-overlay" onclick="toggleCarrito()"></div>
 
-<!-- Carrito Lateral derecho -->
+<!-- Panel lateral derecho -->
 <aside id="carrito-lateral" class="carrito-sidebar">
-
   <div class="carrito-header">
-    <h2>Carretilla Cafertera</h2>
+    <h2>Carretilla Cafetera</h2>
     <button class="btn-cerrar" onclick="toggleCarrito()">&times;</button>
   </div>
 
   <div class="carrito-tabla-header">
     <span>Producto</span>
-    <span>Precio</span>
     <span>Cantidad</span>
     <span>Total</span>
   </div>
 
   <div id="carrito-items" class="carrito-body">
-    <!-- los items que generan dinámicamente desde cart.js -->
+    <!-- Mensaje si está vacío -->
+    <div id="carrito-vacio" class="carrito-vacio" style="display: none;">
+      <div class="carrito-vacio-icono">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+      </div>
+      <p class="carrito-vacio-texto">Tu carretilla está vacía</p>
+      <p class="carrito-vacio-subtexto">Descubre nuestros cafés premium</p>
+    </div>
+    <!-- Lista dinámica de items -->
   </div>
 
   <div class="carrito-footer">
     <p class="conteo-productos">0 productos</p>
     <div class="notas-pedido">
       <label>Agregar notas al pedido</label>
-      <textarea rows="2"></textarea>
+      <textarea id="notas-pedido" rows="2" placeholder="Especifica instrucciones especiales (ej. agregar como regalo, notas de entrega, etc.)"></textarea>
     </div>
     <hr>
     <div class="subtotal-section">
       <span>Subtotal:</span>
       <strong id="subtotal-valor">$0</strong>
     </div>
-    <button id="btn-pagar" class="btn-pagar">Ir a pagar</button>
-    <div id="walletBrick_container"></div>
+    <button id="btn-pagar" class="btn-pagar">
+      <span>Procesar Pedido</span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <polyline points="19 12 12 19 5 12"></polyline>
+      </svg>
+    </button>
   </div>
-
 </aside>

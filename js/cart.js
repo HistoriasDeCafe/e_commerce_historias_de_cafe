@@ -1,461 +1,509 @@
-
-function initCart()
-{
+function initCart() {
   // 1. VARIABLES
-  let cantidadItems = 0
-  let totalAcumulado = 0
+  let cantidadItems = 0;
+  let totalAcumulado = 0;
+  let items = [];
 
   // 2. LOCAL STORAGE
-  let carritoGuardado =
-      JSON.parse(localStorage.getItem("carritoCafe")) || []
+  let carritoGuardado = JSON.parse(localStorage.getItem("carritoCafe")) || [];
 
   // 3. REFERENCIAS
-  const carritoLateral = document.querySelector('#carrito-lateral')
-  const carritoOverlay = document.querySelector('#carrito-overlay')
-  const carritoItems = document.querySelector('#carrito-items')
-  const subtotalValor = document.querySelector('#subtotal-valor')
-  const conteoProductos = document.querySelector('.conteo-productos')
-  const btnPagar = document.querySelector('.btn-pagar')
+  const carritoLateral = document.querySelector('#carrito-lateral');
+  const carritoOverlay = document.querySelector('#carrito-overlay');
+  const carritoItems = document.querySelector('#carrito-items');
+  const carritoVacio = document.querySelector('#carrito-vacio');
+  const subtotalValor = document.querySelector('#subtotal-valor');
+  const conteoProductos = document.querySelector('.conteo-productos');
+  const btnPagar = document.querySelector('.btn-pagar');
   const badgeNav = document.getElementById('conteo-productos-nav');
+  const notasPedido = document.getElementById('notas-pedido');
 
-  carritoItems.innerHTML = ''
+  carritoItems.innerHTML = '';
 
   // =========================================================
   // 4. FUNCIONES DE UTILERÍA Y CONTEO
   // =========================================================
   function guardarCarritoStorage() {
-    localStorage.setItem(
-        "carritoCafe",
-        JSON.stringify(carritoGuardado)
-    )
+    localStorage.setItem("carritoCafe", JSON.stringify(items));
   }
 
-  function alertaProducto(texto, icono = "success")
-  {
-    if (typeof Swal !== "undefined")
-    {
-      Swal.fire(
-      {
-        toast: true,
-        position: "top-end",
-        icon: icono,
-        title: texto,
-        showConfirmButton: false,
-        timer: 1400
-      })
-    }
-    else
-    {
-      alert(texto)
-    }
-  }
-
-  function updateConteo()
-  {
+  function updateConteo() {
     if (conteoProductos) {
-      conteoProductos.textContent =
-        cantidadItems === 1
-          ? '1 producto'
-          : `${cantidadItems} productos`;
+      conteoProductos.textContent = cantidadItems === 1 ? '1 producto' : `${cantidadItems} productos`;
     }
 
     if (badgeNav) {
-        badgeNav.textContent = cantidadItems;
-        console.log("Badge actualizado a:", cantidadItems);
-    } else {
-        console.warn("No se encontró el badge con ID: conteo-productos-nav");
+      badgeNav.textContent = cantidadItems;
     }
   }
 
-  function updateSubtotal()
-  {
+  function updateSubtotal() {
     if (subtotalValor) {
-      subtotalValor.textContent =
-          '$' +
-          totalAcumulado.toLocaleString(
-              'es-CO',
-              {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-              }
-          )
+      subtotalValor.textContent = '$' + totalAcumulado.toLocaleString('es-CO');
+    }
+  }
+
+  function updateEmptyState() {
+    if (carritoVacio) {
+      carritoVacio.style.display = items.length === 0 ? 'flex' : 'none';
     }
   }
 
   // ABRIR / CERRAR
-  window.toggleCarrito = function ()
-  {
-    carritoLateral.classList.toggle('abierto')
-    carritoOverlay.classList.toggle('activo')
-  }
-
-  function actualizarCantidadItem(div, nuevaCantidad)
-  {
-    const precio = parseFloat(div.dataset.precio)
-    const nuevoSubtotal = precio * nuevaCantidad
-
-    div.dataset.cantidad = nuevaCantidad
-    div.querySelector('.item-cantidad').textContent = nuevaCantidad
-    div.querySelector('.item-subtotal').textContent =
-        '$' + nuevoSubtotal.toLocaleString('es-CO')
-  }
+  window.toggleCarrito = function() {
+    carritoLateral.classList.toggle('abierto');
+    carritoOverlay.classList.toggle('activo');
+  };
 
   // =========================================================
-  // 5. AGREGAR AL CARRITO (productId)
+  // 5. AGREGAR AL CARRITO
   // =========================================================
-  function agregarAlCarrito(id, nombre, precio, imgSrc, desdeStorage = false)
-  {
-    const itemExistente =
-        carritoItems.querySelector(
-            `[data-nombre="${nombre}"]`
-        )
+  function agregarAlCarrito(producto) {
+    const { id, nombre, precio, imagen } = producto;
+    
+    const itemExistente = items.find(item => item.nombre === nombre);
 
-    // SI YA EXISTE
-    if (itemExistente)
-    {
-      const nuevaCantidad =
-          parseInt(itemExistente.dataset.cantidad) + 1
-
-      actualizarCantidadItem(itemExistente, nuevaCantidad)
-
-      cantidadItems += 1
-      totalAcumulado += precio
-
-      updateConteo()
-      updateSubtotal()
-
-      if (!desdeStorage) {
-        let prodExiste = carritoGuardado.find(p => p.nombre === nombre)
-        if (prodExiste) {
-          prodExiste.cantidad += 1
-          guardarCarritoStorage()
-        }
-      }
-      return
-    }
-
-    // CREAR NUEVO ITEM
-    const div = document.createElement('div')
-    div.className = 'carrito-item'
-    div.dataset.productId = id // Guardamos el ID que requiere tu OrderDetailRequestDto
-    div.dataset.nombre = nombre
-    div.dataset.precio = precio
-    div.dataset.cantidad = 1
-
-    div.innerHTML = `
-      <div class="prod-info">
-        <div class="prod-img-placeholder">
-          <img src="${imgSrc}" alt="${nombre}">
-        </div>
-        <div class="prod-detalles">
-          <p>${nombre}</p>
-          <button class="btn-eliminar">🗑️eliminar</button>
-        </div>
-      </div>
-      <div class="prod-precio">
-        $${precio.toLocaleString('es-CO')}
-      </div>
-      <div class="prod-cantidad">
-        <div class="control-cantidad">
-          <button class="btn-restar-item">−</button>
-          <span class="item-cantidad">1</span>
-          <button class="btn-sumar-item">+</button>
-        </div>
-      </div>
-      <div class="prod-total item-subtotal">
-        $${precio.toLocaleString('es-CO')}
-      </div>
-    `
-
-    carritoItems.appendChild(div)
-
-    // BOTON +
-    div.querySelector('.btn-sumar-item').addEventListener('click', function ()
-    {
-      const nueva = parseInt(div.dataset.cantidad) + 1
-      if (nueva > 99) return
-
-      actualizarCantidadItem(div, nueva)
-      cantidadItems += 1
-      totalAcumulado += parseFloat(div.dataset.precio)
-
-      let prodMas = carritoGuardado.find(p => p.nombre === div.dataset.nombre)
-      if (prodMas) {
-        prodMas.cantidad += 1
-        guardarCarritoStorage()
-      }
-
-      updateConteo()
-      updateSubtotal()
-    })
-
-    // BOTON -
-    div.querySelector('.btn-restar-item').addEventListener('click', function ()
-    {
-      const nueva = parseInt(div.dataset.cantidad) - 1
-      if (nueva < 1) return
-
-      actualizarCantidadItem(div, nueva)
-      cantidadItems -= 1
-      totalAcumulado -= parseFloat(div.dataset.precio)
-
-      let prodMenos = carritoGuardado.find(p => p.nombre === div.dataset.nombre)
-      if (prodMenos && prodMenos.cantidad > 1) {
-        prodMenos.cantidad -= 1
-        guardarCarritoStorage()
-      }
-
-      updateConteo()
-      updateSubtotal()
-    })
-
-    // ELIMINAR
-    div.querySelector('.btn-eliminar').addEventListener('click', function ()
-    {
-      eliminarItem(div)
-    })
-
-    cantidadItems += 1
-    totalAcumulado += precio
-
-    updateConteo()
-    updateSubtotal()
-
-    if (!desdeStorage)
-    {
-      carritoGuardado.push({
-        id: id, // Guardamos el ID también en el LocalStorage
+    if (itemExistente) {
+      itemExistente.cantidad += 1;
+    } else {
+      items.push({
+        id: id,
         nombre: nombre,
         precio: precio,
-        imgSrc: imgSrc,
+        imagen: imagen,
         cantidad: 1
-      })
-
-      guardarCarritoStorage()
-      Swal.fire({
-            icon: 'success',
-            iconColor: '#8B5E3C',
-            title: '¡Producto Agregado al Carrito!',
-            confirmButtonColor: '#8B5E3C',
-            timer: 2400,
-            showConfirmButton: false
       });
     }
+
+    cantidadItems += 1;
+    totalAcumulado += precio;
+
+    guardarCarritoStorage();
+    renderizarCarrito();
+    updateConteo();
+    updateSubtotal();
+    updateEmptyState();
+
+    Swal.fire({
+      icon: 'success',
+      iconColor: '#532721',
+      title: '¡Producto agregado!',
+      text: `${nombre} se ha añadido a tu carretilla cafetera.`,
+      confirmButtonColor: '#532721',
+      timer: 2000,
+      showConfirmButton: false
+    });
   }
 
-  // ELIMINAR ITEM
-  function eliminarItem(div)
-  {
-    const nombreProducto = div.dataset.nombre
-    const cantidad = parseInt(div.dataset.cantidad)
-    const precio = parseFloat(div.dataset.precio)
-
-    if (typeof Swal !== "undefined") {
-      Swal.fire({
-        title: "¿Eliminar producto?",
-        text: `¿Deseas quitar ${nombreProducto} del carrito?`,
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Sí, eliminar",
-        cancelButtonText: "No",
-        confirmButtonColor: "#8B5E3C",
-        cancelButtonColor: "#999"
-      }).then((result) => {
-        if (result.isConfirmed) {
-          cantidadItems -= cantidad
-          totalAcumulado -= precio * cantidad
-
-          if (cantidadItems < 0) cantidadItems = 0
-          if (totalAcumulado < 0) totalAcumulado = 0
-
-          carritoGuardado = carritoGuardado.filter(item => item.nombre !== nombreProducto)
-          guardarCarritoStorage()
-          div.remove()
-
-          updateConteo()
-          updateSubtotal()
-          alertaProducto("Producto eliminado", "success")
-        }
-      })
-    } else {
-      let confirmar = confirm(`¿Deseas quitar ${nombreProducto} del carrito?`)
-      if (confirmar) {
-        cantidadItems -= cantidad
-        totalAcumulado -= precio * cantidad
-
-        if (cantidadItems < 0) cantidadItems = 0
-        if (totalAcumulado < 0) totalAcumulado = 0
-
-        carritoGuardado = carritoGuardado.filter(item => item.nombre !== nombreProducto)
-        guardarCarritoStorage()
-        div.remove()
-
-        updateConteo()
-        updateSubtotal()
-        alert("Producto eliminado")
-      }
+  // =========================================================
+  // 6. RENDERIZAR CARRITO
+  // =========================================================
+  function renderizarCarrito() {
+    carritoItems.innerHTML = '';
+    
+    if (carritoVacio) {
+      carritoItems.appendChild(carritoVacio);
     }
-  }
 
-  // =========================================================
-  // 6. BOTONES DEL CATÁLOGO (Capturan data-id)
-  // =========================================================
-  function adjuntarBotonesCarrito()
-  {
-    document.querySelectorAll('.btn-cart').forEach(function (boton)
-    {
-      if (boton.dataset.cartReady) return
-      boton.dataset.cartReady = 'true'
+    items.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'carrito-item';
+      div.dataset.productId = item.id;
+      div.dataset.nombre = item.nombre;
+      div.dataset.precio = item.precio;
+      div.dataset.cantidad = item.cantidad;
 
-      boton.addEventListener('click', function ()
-      {
-        const card = boton.closest('.card')
-        
-        // Buscamos el ID del producto que viene de tu DB (en el botón o en la card)
-        const id = boton.dataset.id || card.dataset.id || "1"; 
-        const nombre = card.querySelector('h3').textContent.trim()
-        const imgSrc = card.querySelector('img')?.src || ''
-        const precioTexto = card.querySelector('.price').textContent
-                .replace('$', '')
-                .replace(/\./g, '')
-                .trim()
-        const precio = parseFloat(precioTexto)
+      div.innerHTML = `
+        <div class="prod-info">
+          <div class="prod-img-placeholder">
+            <img src="${item.imagen}" alt="${item.nombre}" onerror="this.src='/assets/img/iconoPepitaCafe-dark.svg'">
+          </div>
+          <div class="prod-detalles">
+            <p class="prod-nombre">${item.nombre}</p>
+            <button class="btn-eliminar" data-nombre="${item.nombre}" title="Eliminar producto">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              <span>Eliminar</span>
+            </button>
+          </div>
+        </div>
 
-        agregarAlCarrito(id, nombre, precio, imgSrc)
+        <div class="prod-cantidad">
+          <div class="control-cantidad">
+            <button class="btn-restar-item" data-nombre="${item.nombre}">−</button>
+            <span class="item-cantidad">${item.cantidad}</span>
+            <button class="btn-sumar-item" data-nombre="${item.nombre}">+</button>
+          </div>
+        </div>
 
-        if (!carritoLateral.classList.contains('abierto')) {
-          toggleCarrito()
-        }
-      })
-    })
-  }
+        <div class="prod-total item-subtotal">
+          $${(item.precio * item.cantidad).toLocaleString('es-CO')}
+        </div>
+      `;
 
-  adjuntarBotonesCarrito()
-  document.addEventListener('catalogoListo', adjuntarBotonesCarrito)
+      carritoItems.appendChild(div);
+    });
 
-  // =========================================================
-  // 7. API DE PAGO SINCRONIZADA
-  // =========================================================
-  const checkoutButton = document.getElementById("btn-pagar");
-
-  if (checkoutButton) {
-    checkoutButton.addEventListener("click", async () => {
-      
-      const details = [];
-      document.querySelectorAll('.carrito-item').forEach(div => {
-        details.push({
-          productId: Number(div.dataset.productId || 1), // Asegura un Long válido
-          quantityProducts: Number(div.dataset.cantidad)  // Mapea a Integer de quantityProducts
-        });
+    // Event listeners
+    document.querySelectorAll('.btn-sumar-item').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const nombre = e.currentTarget.dataset.nombre;
+        updateQty(nombre, 1);
       });
+    });
 
-      if (details.length === 0) {
-        return Swal.fire({
-          icon: 'info',
-          iconColor: '#8B5E3C',
-          title: '¡Tu carretilla está vacía!',
-          confirmButtonColor: '#8B5E3C',
-          timer: 2400,
-          showConfirmButton: false
-        });
-      }
+    document.querySelectorAll('.btn-restar-item').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const nombre = e.currentTarget.dataset.nombre;
+        updateQty(nombre, -1);
+      });
+    });
 
-      try {
-        checkoutButton.textContent = "Cargando pago...";
-        checkoutButton.disabled = true;
+    document.querySelectorAll('.btn-eliminar').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const nombre = e.currentTarget.dataset.nombre;
+        eliminarItem(nombre);
+      });
+    });
+  }
 
-        const API_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-          ? "http://localhost:8080"
-          : "https://e-commerce-historias-de-cafe-backend.onrender.com";
+  // =========================================================
+  // 7. ACTUALIZAR CANTIDAD
+  // =========================================================
+  function updateQty(nombre, cambio) {
+    const item = items.find(i => i.nombre === nombre);
+    if (!item) return;
 
-        const token = localStorage.getItem("authToken");
-        const usuarioActivo = JSON.parse(localStorage.getItem("usuarioActivo"));
+    const nuevaCantidad = item.cantidad + cambio;
+    if (nuevaCantidad < 1 || nuevaCantidad > 99) return;
 
-        if (!token || !usuarioActivo || !(usuarioActivo.id || usuarioActivo.idUser)) {
-          throw new Error("Debes iniciar sesión para procesar el pago.");
-        }
+    item.cantidad = nuevaCantidad;
+    cantidadItems += cambio;
+    totalAcumulado += item.precio * cambio;
 
-        const authHeaders = {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        };
+    guardarCarritoStorage();
+    renderizarCarrito();
+    updateConteo();
+    updateSubtotal();
+  }
 
-        // JSON estructurado idéntico a OrderRequestDto
-        const orderPayload = {
-          userId: usuarioActivo.id || usuarioActivo.idUser, 
-          stateOrder: "En proceso", 
-          details: details 
-        };
+  // =========================================================
+  // 8. ELIMINAR ITEM
+  // =========================================================
+  function eliminarItem(nombre) {
+    const item = items.find(i => i.nombre === nombre);
+    if (!item) return;
 
-        // PASO 1: Crear la orden
-        const orderResponse = await fetch(`${API_URL}/orders`, {
-          method: "POST",
-          headers: authHeaders,
-          body: JSON.stringify(orderPayload)
-        });
+    Swal.fire({
+      title: "¿Eliminar producto?",
+      html: `¿Deseas quitar <strong>${nombre}</strong> del carrito?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+      confirmButtonColor: "#dc3545",
+      cancelButtonColor: "#6c757d"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        cantidadItems -= item.cantidad;
+        totalAcumulado -= item.precio * item.cantidad;
 
-        if (orderResponse.status === 401 || orderResponse.status === 403) {
-          throw new Error("No tienes autorización para crear la orden. Verifica los permisos del rol CLIENTE en el backend.");
-        }
+        items = items.filter(i => i.nombre !== nombre);
 
-        if (!orderResponse.ok) throw new Error("Error interno en /orders");
-
-        const orderData = await orderResponse.json();
-        const nuevoOrderId = orderData.id; 
-
-        // PASO 2: Procesar el pago pasándole el ID real
-        const paymentResponse = await fetch(`${API_URL}/payments`, {
-          method: "POST",
-          headers: authHeaders,
-          body: JSON.stringify({ orderId: nuevoOrderId })
-        });
-
-        if (paymentResponse.status === 401 || paymentResponse.status === 403) {
-          throw new Error("No tienes autorización para procesar el pago. Verifica los permisos del rol CLIENTE en el backend.");
-        }
-
-        if (!paymentResponse.ok) throw new Error("Error interno en /payments");
-
-        const paymentData = await paymentResponse.json();
-        const linkDePago = paymentData.paymentUrl;
-
-        if (linkDePago) {
-          window.location.href = linkDePago;
-        } else {
-          throw new Error("No se obtuvo paymentUrl de la respuesta.");
-        }
-      }
-      catch (error) {
-        console.error("Error:", error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al conectar con el servidor',
-          text: 'No se pudo procesar tu compra de café. Inténtalo de nuevo.',
-          confirmButtonColor: '#8B5E3C'
-        });
-        checkoutButton.textContent = "Ir a pagar";
-        checkoutButton.disabled = false;
+        guardarCarritoStorage();
+        renderizarCarrito();
+        updateConteo();
+        updateSubtotal();
+        updateEmptyState();
       }
     });
   }
 
   // =========================================================
-  // 8. CARGAR STORAGE
+  // 9. PROCESAR PAGO
   // =========================================================
-  if (carritoGuardado.length > 0)
-  {
-    carritoGuardado.forEach(producto =>
-    {
-      for (let i = 0; i < producto.cantidad; i++)
-      {
-        agregarAlCarrito(
-            producto.id || "1",
-            producto.nombre,
-            producto.precio,
-            producto.imgSrc,
-            true
-        )
+  async function irAPagar() {
+    if (items.length === 0) {
+      return Swal.fire({
+        icon: 'info',
+        iconColor: '#532721',
+        title: '¡Tu carretilla está vacía!',
+        text: 'Agrega algunos cafés premium antes de procesar tu pedido.',
+        confirmButtonColor: '#532721',
+        timer: 2400,
+        showConfirmButton: false
+      });
+    }
+
+    try {
+      toggleCarrito();
+
+      const token = localStorage.getItem("authToken");
+      const usuarioActivo = localStorage.getItem("usuarioActivo");
+
+      console.log('[PAYMENT_FLOW] Iniciando proceso de pago');
+      console.log('[PAYMENT_FLOW] Token presente:', !!token);
+      console.log('[PAYMENT_FLOW] Usuario activo presente:', !!usuarioActivo);
+
+      if (!token) {
+        return Swal.fire({
+          icon: 'warning',
+          iconColor: '#532721',
+          title: 'Sesión requerida',
+          text: 'No hay token de autenticación. Por favor, inicia sesión nuevamente.',
+          confirmButtonColor: '#532721'
+        });
       }
-    })
+
+      if (!usuarioActivo) {
+        return Swal.fire({
+          icon: 'warning',
+          iconColor: '#532721',
+          title: 'Sesión requerida',
+          text: 'No hay información de usuario. Por favor, inicia sesión nuevamente.',
+          confirmButtonColor: '#532721'
+        });
+      }
+
+      const userData = JSON.parse(usuarioActivo);
+      const userId = userData.id || userData.idUser;
+
+      console.log('[PAYMENT_FLOW] Datos del usuario:', userData);
+      console.log('[PAYMENT_FLOW] Rol del usuario:', userData.role || userData.rol || 'No especificado');
+
+      if (!userId) {
+        return Swal.fire({
+          icon: 'warning',
+          iconColor: '#532721',
+          title: 'Datos de usuario incompletos',
+          text: 'La información de usuario no contiene un ID válido. Por favor, inicia sesión nuevamente.',
+          confirmButtonColor: '#532721'
+        });
+      }
+
+      // Preparar detalles de la orden
+      const details = items.map(item => {
+        const productId = Number(item.id || 1);
+        console.log('[PAYMENT_FLOW] Item:', item.nombre, 'ID enviado:', productId);
+        return {
+          productId: productId,
+          quantityProducts: Number(item.cantidad)
+        };
+      });
+
+      console.log('[PAYMENT_FLOW] Detalles de la orden:', details);
+
+      const invalidDetails = details.filter(d => 
+        !d.productId || !d.quantityProducts || d.quantityProducts <= 0
+      );
+
+      if (invalidDetails.length > 0) {
+        throw new Error('Hay productos con información inválida en el carrito');
+      }
+
+      Swal.fire({
+        title: 'Procesando tu pedido...',
+        text: 'Creando orden en el sistema',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      const API_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+        ? "http://localhost:8080"
+        : "https://e-commerce-historias-de-cafe-backend.onrender.com";
+
+      const authHeaders = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      };
+
+      const orderPayload = {
+        userId: userId,
+        stateOrder: "En proceso",
+        details: details
+      };
+
+      console.log('[PAYMENT_FLOW] Enviando OrderRequestDto:', orderPayload);
+      console.log('[PAYMENT_FLOW] Endpoint:', `${API_URL}/orders`);
+
+      const orderResponse = await fetch(`${API_URL}/orders`, {
+        method: "POST",
+        headers: authHeaders,
+        body: JSON.stringify(orderPayload)
+      });
+
+      console.log('[PAYMENT_FLOW] Respuesta orden - Status:', orderResponse.status);
+
+      if (orderResponse.status === 401) {
+        Swal.close();
+        return Swal.fire({
+          icon: 'error',
+          iconColor: '#dc3545',
+          title: 'Sesión expirada',
+          text: 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
+          confirmButtonColor: '#532721'
+        });
+      }
+
+      if (orderResponse.status === 403) {
+        Swal.close();
+        return Swal.fire({
+          icon: 'error',
+          iconColor: '#dc3545',
+          title: 'Sin permisos para crear órdenes',
+          html: `Tu cuenta (ID: ${userId}) con rol <strong>${userData.role || userData.rol || 'No especificado'}</strong> no tiene permisos para crear órdenes de compra.`,
+          confirmButtonColor: '#532721',
+          width: '550px'
+        });
+      }
+
+      if (!orderResponse.ok) {
+        const errorText = await orderResponse.text();
+        throw new Error(`Error al crear la orden: ${orderResponse.status} - ${errorText}`);
+      }
+
+      const orderData = await orderResponse.json();
+      console.log('[PAYMENT_FLOW] OrderResponseDto recibido:', orderData);
+
+      const nuevoOrderId = orderData.id;
+      
+      if (!nuevoOrderId) {
+        throw new Error('La respuesta del servidor no contiene un ID de orden válido');
+      }
+
+      console.log('[PAYMENT_FLOW] Orden creada exitosamente con ID:', nuevoOrderId);
+
+      Swal.update({
+        title: 'Configurando pago...',
+        text: 'Conectando con la pasarela de pago segura'
+      });
+
+      const paymentPayload = {
+        orderId: nuevoOrderId
+      };
+
+      console.log('[PAYMENT_FLOW] Enviando PaymentRequestDto:', paymentPayload);
+      console.log('[PAYMENT_FLOW] Endpoint:', `${API_URL}/payments`);
+
+      const paymentResponse = await fetch(`${API_URL}/payments`, {
+        method: "POST",
+        headers: authHeaders,
+        body: JSON.stringify(paymentPayload)
+      });
+
+      console.log('[PAYMENT_FLOW] Respuesta pago - Status:', paymentResponse.status);
+
+      if (paymentResponse.status === 401) {
+        Swal.close();
+        return Swal.fire({
+          icon: 'error',
+          iconColor: '#dc3545',
+          title: 'Sesión expirada',
+          text: 'Tu sesión ha expirado durante el proceso de pago. Por favor, inicia sesión nuevamente.',
+          confirmButtonColor: '#532721'
+        });
+      }
+
+      if (paymentResponse.status === 403) {
+        Swal.close();
+        return Swal.fire({
+          icon: 'error',
+          iconColor: '#dc3545',
+          title: 'Sin permisos',
+          text: 'No tienes los permisos necesarios para procesar el pago.',
+          confirmButtonColor: '#532721'
+        });
+      }
+
+      if (!paymentResponse.ok) {
+        const errorText = await paymentResponse.text();
+        throw new Error(`Error al crear la preferencia de pago: ${paymentResponse.status} - ${errorText}`);
+      }
+
+      const paymentData = await paymentResponse.json();
+      console.log('[PAYMENT_FLOW] PaymentResponseDto recibido:', paymentData);
+
+      const paymentUrl = paymentData.paymentUrl;
+      
+      if (!paymentUrl) {
+        throw new Error('La respuesta del servidor no contiene una URL de pago válida');
+      }
+
+      console.log('[PAYMENT_FLOW] URL de pago obtenida:', paymentUrl);
+      console.log('[PAYMENT_FLOW] Redirigiendo a pasarela de pago...');
+
+      Swal.close();
+      window.location.href = paymentUrl;
+
+    } catch (error) {
+      console.error('[PAYMENT_FLOW] Error no manejado:', error);
+      Swal.fire({
+        icon: 'error',
+        iconColor: '#dc3545',
+        title: 'Error al procesar el pedido',
+        text: error.message || 'No se pudo procesar tu compra de café. Por favor, inténtalo de nuevo.',
+        confirmButtonColor: '#532721'
+      });
+    }
   }
+
+  // =========================================================
+  // 10. BOTONES DEL CATÁLOGO
+  // =========================================================
+  function adjuntarBotonesCarrito() {
+    document.querySelectorAll('.add-to-cart-btn').forEach(boton => {
+      if (boton.dataset.cartReady) return;
+      boton.dataset.cartReady = 'true';
+
+      boton.addEventListener('click', (e) => {
+        const productId = e.currentTarget.dataset.productId;
+        const card = e.currentTarget.closest('.card');
+        
+        const nombre = card.querySelector('.product-name')?.textContent.trim();
+        const origen = card.querySelector('.product-origin')?.textContent.trim();
+        const descripcion = card.querySelector('.product-description')?.textContent.trim();
+        const precioTexto = card.querySelector('.product-price')?.textContent.replace('$', '').replace(/\./g, '').trim();
+        const precio = parseFloat(precioTexto);
+        const imagen = card.querySelector('img')?.src || '/assets/img/iconoPepitaCafe-dark.svg';
+
+        agregarAlCarrito({
+          id: productId,
+          nombre: nombre,
+          precio: precio,
+          imagen: imagen
+        });
+      });
+    });
+  }
+
+  // =========================================================
+  // 11. INICIALIZACIÓN
+  // =========================================================
+  if (btnPagar) {
+    btnPagar.addEventListener('click', irAPagar);
+  }
+
+  adjuntarBotonesCarrito();
+  document.addEventListener('catalogoListo', adjuntarBotonesCarrito);
+
+  // Cargar desde storage
+  if (carritoGuardado.length > 0) {
+    items = carritoGuardado;
+    cantidadItems = items.reduce((acc, i) => acc + i.cantidad, 0);
+    totalAcumulado = items.reduce((acc, i) => acc + (i.precio * i.cantidad), 0);
+    
+    renderizarCarrito();
+    updateConteo();
+    updateSubtotal();
+    updateEmptyState();
+  } else {
+    updateEmptyState();
+  }
+
+  // Exponer función global
+  window.addToCart = agregarAlCarrito;
 }

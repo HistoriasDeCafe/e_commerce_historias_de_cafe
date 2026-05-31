@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Acerca de nosotros</title>
-  <link rel="icon" type="image/x-icon" href="../../assets/img/iconoPepitaCafe-dark.svg">
+  <link rel="icon" type="image/x-icon" href="/assets/img/iconoPepitaCafe-dark.svg">
 
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -11,220 +11,97 @@
   <!-- Iconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-  
 
   <!-- Estilos -->
-  <link rel="stylesheet" href="../../assets/css/paletaColores.css">
-  <link rel="stylesheet" href="../../components/navBar/navBar.css">
-  <link rel="stylesheet" href="../../components/footer/footer.css">
-  <link rel="stylesheet" href="../../pages/acercaDeNosotros/acerca_de_nosotros.css">
+  <link rel="stylesheet" href="/assets/css/paletaColores.css">
+  <link rel="stylesheet" href="/components/navBar/navBar.css">
+  <link rel="stylesheet" href="/components/footer/footer.css">
+  <link rel="stylesheet" href="/pages/acercaDeNosotros/acerca_de_nosotros.css">
 </head>
 
 <body>
 
   <div id="navbar-container"></div>
   <div id="carrito-container"></div>
-    <header class="container mt-5">
-        <div id="carouselExampleCaptions" class="carousel slide carousel-fade custom-carousel" data-bs-ride="carousel">
-            <div class="carousel-indicators">
-                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active"
-                    aria-current="true"></button>
-                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1"></button>
-                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2"></button>
-            </div>
 
-            <div class="carousel-inner rounded-4 shadow-lg">
-                <div class="carousel-item active">
-                    <img src="../../assets/img/despulpado.png" class="d-block w-100" alt="Despulpado">
-                    <div class="carousel-caption">
-                        <h5 class="fw-bold">Justicia Económica</h5>
-                        <p>Trabajamos para maximizar los ingresos directos de los productores, garantizando precios
-                            honestos que impulsen el crecimiento de sus familias.</p>
-                    </div>
-                </div>
+  <!-- HERO SECTION -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">Nuestra Historia</h1>
+      <p class="hero-subtitle">Conectando familias caficultoras directamente con tu taza</p>
+    </div>
+  </section>
 
-                <div class="carousel-item">
-                    <img src="../../assets/img/manos&cafe.png" class="d-block w-100" alt="Manos y Café">
-                    <div class="carousel-caption">
-                        <h5 class="fw-bold">Sostenibilidad Cultural</h5>
-                        <p>Nos apasiona preservar la herencia cafetera, honrando el trabajo manual y artesanal para
-                            asegurar que esta cultura perdure en las próximas generaciones.</p>
-                    </div>
-                </div>
-
-                <div class="carousel-item">
-                    <img src="../../assets/img/herencia&cultivo.png" class="d-block w-100" alt="Herencia">
-                    <div class="carousel-caption">
-                        <h5 class="fw-bold"> Trazabilidad y Transparencia</h5>
-                        <p>Ofrecemos una conexión real desde la familia, la finca hasta la taza, permitiendo que
-                            nuestros clientes conozcan cada paso del proceso a través de tecnología y relatos humanos.
-                        </p>
-                    </div>
-                </div>
-
-            </div>
-
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions"
-                data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Anterior</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions"
-                data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Siguiente</span>
-            </button>
+  <!-- VALORES SECTION -->
+  <section class="values-section">
+    <div class="container">
+      <h2 class="section-title">Nuestros Valores</h2>
+      <div class="values-grid">
+        <div class="value-card">
+          <div class="value-icon">💰</div>
+          <h3>Justicia Económica</h3>
+          <p>Maximizamos los ingresos directos de los productores, garantizando precios honestos y justos.</p>
         </div>
-    </header>
-    <main class="container my-5">
-        <div class="row text-center mb-5">
-            <div class="col-md-6 px-4">
-                <h3 class="titulo-cafe">Nuestra Razón de Ser</h3>
-                <p class="text-muted">Dignificamos la labor de las familias caficultoras eliminando intermediarios.
-                    Somos el puente directo que garantiza justicia económica para el productor y una conexión auténtica
-                    para el consumidor.</p>
-            </div>
-            <div class="col-md-6 px-4">
-                <h3 class="titulo-cafe">Trazabilidad del Cultivo a la Taza</h3>
-                <p class="text-muted">Garantizamos transparencia total en cada grano: desde la cosecha manual y el
-                    beneficio artesanal, hasta el tostado preciso. Un camino rastreable que asegura calidad de origen en
-                    cada taza.</p>
-            </div>
+        <div class="value-card">
+          <div class="value-icon">🌱</div>
+          <h3>Sostenibilidad Cultural</h3>
+          <p>Preservamos la herencia cafetera, honrando el trabajo manual y artesanal de las familias.</p>
         </div>
-
+        <div class="value-card">
+          <div class="value-icon">🔍</div>
+          <h3>Trazabilidad Total</h3>
+          <p>Conexión real y transparente desde la familia, la finca hasta la taza de café.</p>
         </div>
+      </div>
+    </div>
+  </section>
 
-
-        <div class="row mb-5 justify-content-center">
-            <div class="col-md-10 impacto-box text-center">
-                <h2 class="titulo-cafe">Nuestro Impacto</h2>
-                <p class="lead"> Al desarrollar el proyecto Historias de Café, generamos un impacto multidimensional que
-                    trasciende la creación de una plataforma tecnológica; estamos construyendo un ecosistema de equidad
-                    y reconocimiento para el campo colombiano.</p>
-                </p>
-            </div>
+  <!-- MISION SECTION -->
+  <section class="mission-section">
+    <div class="container">
+      <div class="mission-grid">
+        <div class="mission-card">
+          <h3>Nuestra Razón de Ser</h3>
+          <p>Dignificamos la labor de las familias caficultoras eliminando intermediarios y garantizando que cada grano cuente.</p>
         </div>
-
-        <h3 class="text-center mb-5 equipo-title">
-        Nuestro equipo
-        </h3>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4 justify-content-center">
-
-            <div class="col-12 col-sm-6 col-md-4">
-                <div class="card h-100 border-0 shadow-sm card-hover">
-                    <img src="../../assets/img/PerfilAle.png" class="card-img-top object-fit-cover" 
-                        alt="Alejandra Pinilla">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title text-brown fw-bold">Maira Alejandra Pinilla</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">Full Stack & Scrum Master</h6>
-                        <p class="card-text text-muted small flex-grow-1">
-                            Apasionada por crear experiencias digitales únicas, combinando diseño, tecnología y
-                            propósito.
-                        </p>
-                        <div class="d-flex justify-content-center gap-2 mt-3">
-                                <a href="https://www.linkedin.com/in/maira-alejandra-pinilla-pinilla-ingenieria-de-sistemas-desarrolladora/"
-                                target="_blank" class="social-icon icon-linkedin" title="LinkedIn">
-                                <i class="fa-brands fa-linkedin"></i></a>
-                                <a href="https://github.com/Malejandrapin" target="_blank" class="social-icon icon-github"
-                                title="GitHub">
-                                <i class="fa-brands fa-github"></i></a>
-                                <a href="https://malejandrapin.github.io/Alejandra-Pinilla-Portafolio/" target="_blank"
-                                class="social-icon icon-portfolio" title="Portafolio">
-                                <i class="fa-solid fa-briefcase"></i></a></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-12 col-sm-6 col-md-4">
-                <div class="card h-100 border-0 shadow-sm card-hover">
-                    <img src="../../assets/img/fotoAndres-removebg-preview.png" class="card-img-top object-fit-cover" 
-                        alt="Andres Diaz">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title text-brown fw-bold">Andrés Díaz Figueroa</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">Java Full Stack Junior</h6>
-                        <p class="card-text text-muted small flex-grow-1">
-                            Apasionado por la tecnología, el desarrollo de software y la arquitectura cloud.
-                        </p>
-                        <div class="d-flex justify-content-center gap-2 mt-3">
-                            <a href="https://www.linkedin.com/in/andres-diaz-figueroa-tecnology-innovation-developer-cloud/"
-                                target="_blank" class="social-icon icon-linkedin" title="LinkedIn">
-                                <i class="fa-brands fa-linkedin"></i></a>
-                            <a href="https://github.com/andresdiazf" target="_blank" class="social-icon icon-github"
-                                title="GitHub">
-                                <i class="fa-brands fa-github"></i></a>
-                            <a href="https://myportfolio-andres-diaz-figueroa.vercel.app/" target="_blank"
-                                class="social-icon icon-portfolio" title="Portafolio">
-                                <i class="fa-solid fa-briefcase"></i></a></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="col-12 col-sm-6 col-md-4">
-                <div class="card h-100 border-0 shadow-sm card-hover">
-                    <img src="../../assets/img/fotoDidier .png" class="card-img-top object-fit-cover" 
-                        alt="Didier Cuan Najas">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title text-brown fw-bold">Didier Cuan Najas</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">Full Stack Developer</h6>
-                        <p class="card-text text-muted small flex-grow-1">
-                            Analista y desarrollador full stack apasionado por la tecnologia backend y frontend.
-                        </p>
-                        <div class="d-flex justify-content-center gap-2 mt-3">
-                            <a href="https://www.linkedin.com/in/didier-alexis-cuan-najas-developer-full-stack/"
-                                target="_blank" class="social-icon icon-linkedin" title="LinkedIn">
-                                <i class="fa-brands fa-linkedin"></i></a>
-                            <a href="https://github.com/didierNajas" target="_blank" class="social-icon icon-github"
-                                title="GitHub">
-                                <i class="fa-brands fa-github"></i></a>
-                            <a href="https://didiernajas.github.io/Basic-portafolio/" target="_blank"
-                                class="social-icon icon-portfolio" title="Portafolio">
-                                <i class="fa-solid fa-briefcase"></i></a></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-12 col-sm-6 col-md-4">
-                <div class="card h-100 border-0 shadow-sm card-hover">
-                    <img src="../../assets/img/fotoZully.png" class="card-img-top object-fit-cover" 
-                        alt="Zully Tamayo">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title text-brown fw-bold">Zully Tamayo Martinez</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">Desarrolladora FullStack</h6>
-                        <p class="card-text text-muted small flex-grow-1">
-                            Apasionada por construir soluciones eficientes y lógica de backend robusta.
-                        </p>
-                        <div class="d-flex justify-content-center gap-2 mt-3">
-                            <a href="https://www.linkedin.com/in/zully-tamayo-martinez-softwaredeveloper"
-                                target="_blank" class="social-icon icon-linkedin" title="LinkedIn">
-                                <i class="fa-brands fa-linkedin"></i></a>
-                            <a href="https://github.com/zullytamayom" target="_blank" class="social-icon icon-github"
-                                title="GitHub">
-                                <i class="fa-brands fa-github"></i></a>
-                            <a href="https://phenomenal-eclair-9360d4.netlify.app/" target="_blank"
-                                class="social-icon icon-portfolio" title="Portafolio">
-                                <i class="fa-solid fa-briefcase"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+        <div class="mission-card">
+          <h3>Trazabilidad del Cultivo a la Taza</h3>
+          <p>Garantizamos transparencia total en cada grano desde la cosecha hasta el tostado, conectando origen y destino.</p>
         </div>
-      
+      </div>
+    </div>
+  </section>
 
-        </div>
-        </main>
+  <!-- IMPACT SECTION -->
+  <section class="impact-section">
+    <div class="container">
+      <div class="impact-content">
+        <h2 class="impact-title">Nuestro Impacto</h2>
+        <p class="impact-text">Construimos un ecosistema de equidad y reconocimiento para el campo colombiano, transformando vidas a través del comercio justo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEAM SECTION -->
+  <section class="team-section">
+    <div class="container">
+      <h2 class="section-title">Nuestro Equipo</h2>
+      <p class="section-subtitle">Los apasionados detrás de cada taza de café</p>
+
+      <div class="team-grid" id="team-grid">
+        <!-- Team cards will be rendered by JavaScript -->
+      </div>
+    </div>
+  </section>
 
   <!-- FOOTER -->
   <div id="footer-container"></div>
 
   <!-- JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="../../js/main.js"></script>
-  <script src="../../js/cart.js"></script>
-  
+  <script src="/js/main.js"></script>
+  <script src="/js/cart.js"></script>
+  <script src="/js/about.js"></script>
+
 </body>
 </html>

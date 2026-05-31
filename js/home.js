@@ -1,104 +1,121 @@
-// --- 1. CONFIGURACIÓN INICIAL DEL CARRITO ---
-const contadorUI = document.getElementById('contadorCarrito');
+// --- SLIDER FUNCTIONALITY ---
+let currentSlide = 0;
+const totalSlides = 5;
+let slideInterval;
 
-
-// --- 2. FUNCIONALIDAD DEL CARRUSEL ---
 const next = document.querySelector('.next');
 const prev = document.querySelector('.prev');
 
+function updateSlider() {
+  const items = document.querySelectorAll('.slide-list .item');
+  items.forEach((item, index) => {
+    item.style.opacity = '0';
+    item.style.transform = 'scale(0.96)';
+    item.style.filter = 'blur(2px) brightness(0.65)';
+    item.style.zIndex = '0';
+  });
+
+  const activeItem = items[currentSlide];
+  if (activeItem) {
+    activeItem.style.opacity = '1';
+    activeItem.style.transform = 'scale(1)';
+    activeItem.style.filter = 'none';
+    activeItem.style.zIndex = '1';
+  }
+}
+
+function nextSlide() {
+  currentSlide = (currentSlide + 1) % totalSlides;
+  updateSlider();
+}
+
+function prevSlide() {
+  currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+  updateSlider();
+}
+
 next?.addEventListener('click', () => {
-    let items = document.querySelectorAll('.item');
-    document.querySelector('.slide-list').appendChild(items[0]);
+  nextSlide();
+  resetInterval();
 });
 
 prev?.addEventListener('click', () => {
-    let items = document.querySelectorAll('.item');
-    document.querySelector('.slide-list').prepend(items[items.length - 1]);
+  prevSlide();
+  resetInterval();
 });
 
-// --- 3. TRANSICIÓN DE COHETE (MENU) ---
-document.querySelectorAll('.opcionesBarra').forEach(link => {
-    link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const targetId = this.getAttribute('href');
-        const targetSection = document.querySelector(targetId);
-        const transition = document.getElementById('rocket-transition');
-        const rocket = transition.querySelector('.rocket');
+function resetInterval() {
+  clearInterval(slideInterval);
+  slideInterval = setInterval(nextSlide, 5000);
+}
 
-        transition.style.display = 'flex';
-        rocket.classList.add('launching');
-
-        setTimeout(() => {
-            targetSection.scrollIntoView({ behavior: 'smooth' });
-            setTimeout(() => {
-                transition.style.display = 'none';
-                rocket.classList.remove('launching');
-            }, 300);
-        }, 400);
-    });
-});
-
-
-/* =========================================
-   PLAY / PAUSE VIDEOS HERO
-========================================= */
-
+// --- VIDEO FUNCTIONALITY ---
 const videoCards = document.querySelectorAll(".video-card");
+let playingVideo = null;
 
 const isMobile = () => window.matchMedia("(max-width: 768px)").matches;
 
-videoCards.forEach(card => {
+function toggleVideo(videoNum) {
+  const videoCard = videoCards[videoNum - 1];
+  const video = videoCard.querySelector("video");
 
-    const video = card.querySelector("video");
+  if (playingVideo === videoNum) {
+    video.pause();
+    playingVideo = null;
+    videoCard.classList.remove("playing");
+  } else {
+    // Pause all other videos
+    videoCards.forEach((card, index) => {
+      const v = card.querySelector("video");
+      if (v) {
+        v.pause();
+        v.controls = false;
+        card.classList.remove("playing");
+      }
+    });
 
-    /* DESKTOP */
-    if(!isMobile()){
+    video.controls = true;
+    video.play();
+    playingVideo = videoNum;
+    videoCard.classList.add("playing");
+  }
+}
 
-        card.addEventListener("mouseenter", () => {
+videoCards.forEach((card, index) => {
+  const video = card.querySelector("video");
+  const playBtn = card.querySelector(".play-btn");
 
-            video.controls = true;
+  /* DESKTOP */
+  if (!isMobile()) {
+    card.addEventListener("mouseenter", () => {
+      video.controls = true;
+      video.play();
+      card.classList.add("playing");
+    });
 
-            video.play();
+    card.addEventListener("mouseleave", () => {
+      video.pause();
+      video.currentTime = 0;
+      video.controls = false;
+      card.classList.remove("playing");
+    });
+  }
 
-            card.classList.add("playing");
-        });
+  /* MOBILE */
+  else {
+    playBtn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleVideo(index + 1);
+    });
 
-        card.addEventListener("mouseleave", () => {
+    card.addEventListener("click", () => {
+      toggleVideo(index + 1);
+    });
+  }
+});
 
-            video.pause();
-
-            video.currentTime = 0;
-
-            video.controls = false;
-
-            card.classList.remove("playing");
-        });
-    }
-
-    /* MOBILE */
-    else{
-
-        card.addEventListener("click", () => {
-
-            const isPlaying = !video.paused;
-
-            document.querySelectorAll(".product-video").forEach(v => {
-
-                v.pause();
-
-                v.controls = false;
-
-                v.closest(".video-card")?.classList.remove("playing");
-            });
-
-            if(!isPlaying){
-
-                video.controls = true;
-
-                video.play();
-
-                card.classList.add("playing");
-            }
-        });
-    }
+// --- INITIALIZATION ---
+document.addEventListener('DOMContentLoaded', () => {
+  updateSlider();
+  slideInterval = setInterval(nextSlide, 5000);
 });

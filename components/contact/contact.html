@@ -1,39 +1,51 @@
 <!-- Contenido para inyectar en contact-container -->
-<div class="contact-form-inner">
-    <div class="mb-4 header-contact">
-        <span class="coffee-badge mb-2 d-inline-block"><i class="fa-solid fa-mug-hot me-2"></i>Contacto Directo</span>
-        <h2 style="font-family: 'Playfair Display', serif; color: var(--color-primary);" class="fw-bold display-6">Escríbenos</h2>
-        <p class="text-muted lead-sm">Tu opinión es el aroma de nuestro servicio</p>
+<div class="row shadow-lg rounded-4 overflow-hidden g-0 contact-wrapper">
+    <!-- Columna de la Imagen -->
+    <div class="col-md-7 d-none d-md-block p-0">
+        <img src="/assets/img/herencia&cultivo.png" alt="Cosecha de Café"
+             class="img-fluid h-100 w-100 object-fit-cover">
     </div>
 
-    <form action="https://formspree.io/f/xlgajpkq" class="row g-4" novalidate target="_top" method="POST">
-        <div class="col-12">
-            <label class="form-label" for="name">Nombre</label>
-            <div class="input-group-custom">
-                <input type="text" class="form-control" id="name" name="name" placeholder="Tu nombre completo" required />
+    <div class="col-md-5 p-4 p-md-5 contact-form-inner">
+        <div class="mb-4 header-contact">
+            <span class="coffee-badge mb-2 d-inline-block"><i class="fa-solid fa-mug-hot me-2"></i>Contacto Directo</span>
+            <h2 style="font-family: 'Playfair Display', serif; color: var(--color-primary);" class="fw-bold display-6">Escríbenos</h2>
+            <p class="text-muted lead-sm">Tu opinión es el aroma de nuestro servicio</p>
+        </div>
+
+        <form id="contact-form" class="row g-4" novalidate>
+            <div class="col-12">
+                <label class="form-label" for="name">Nombre</label>
+                <div class="input-group-custom">
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Tu nombre completo" required />
+                    <div class="invalid-feedback" id="name-error"></div>
+                </div>
             </div>
-        </div>
 
-        <div class="col-md-6">
-            <label class="form-label" for="email">Correo Electrónico</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="nombre@ejemplo.com" required />
-        </div>
+            <div class="col-md-6">
+                <label class="form-label" for="email">Correo Electrónico</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="nombre@ejemplo.com" required />
+                <div class="invalid-feedback" id="email-error"></div>
+            </div>
 
-        <div class="col-md-6">
-            <label class="form-label" for="number">Teléfono</label>
-            <input type="tel" class="form-control" id="number" name="number" placeholder="+57 300 000 0000" />
-        </div>
+            <div class="col-md-6">
+                <label class="form-label" for="number">Teléfono</label>
+                <input type="tel" class="form-control" id="number" name="number" placeholder="+57 300 000 0000" />
+                <div class="invalid-feedback" id="number-error"></div>
+            </div>
 
-        <div class="col-12">
-            <label class="form-label" for="message">Mensaje</label>
-            <textarea class="form-control" id="message" name="message" rows="4" required
-                placeholder="Cuéntanos cómo podemos ayudarte o qué historia quieres compartir..."></textarea>
-        </div>
+            <div class="col-12">
+                <label class="form-label" for="message">Mensaje</label>
+                <textarea class="form-control" id="message" name="message" rows="4" required
+                    placeholder="Cuéntanos cómo podemos ayudarte o qué historia quieres compartir..."></textarea>
+                <div class="invalid-feedback" id="message-error"></div>
+            </div>
 
-        <div class="col-12 text-end mt-4">
-            <button class="btnEnviar btn w-100 w-md-auto text-uppercase" type="submit">
-                Enviar Mensaje <i class="bi bi-send-fill ms-2"></i>
-            </button>
-        </div>
-    </form>
+            <div class="col-12 text-end mt-4">
+                <button class="btnEnviar btn w-100 w-md-auto text-uppercase" type="submit">
+                    Enviar Mensaje <i class="bi bi-send-fill ms-2"></i>
+                </button>
+            </div>
+        </form>
+    </div>
 </div>

@@ -1,47 +1,39 @@
 <!-- SIDEBAR -->
-<div id="sidebar-container">
-    <aside class="sidebar">
-        <div class="logo-section">
-            <span>Módulo Administrativo</span> <br>
-            <img src="../../assets/img/logo-dark.svg" alt="Admin" width="120">
-        </div>
-
-        <nav>
-            <ul>
-                <li class="active" data-view="Dashboard">
-                    <i class="bi bi-speedometer2"></i>
-                    <span>Dashboard</span>
-                </li>
-
-                <li data-view="Productos">
-                    <i class="bi bi-box-seam"></i>
-                    <span>Productos</span>
-                </li>
-
-                <li data-view="Ordenes">
-                    <i class="bi bi-receipt"></i>
-                    <span>Ordenes</span>
-                </li>
-
-                <li data-view="Usuarios">
-                    <i class="bi bi-people"></i>
-                    <span>Usuarios</span>
-                </li>
-
-
-                <li data-view="Configuración">
-                    <i class="bi bi-gear"></i>
-                    <span>Configuración</span>
-                </li>
-                <li data-view="SalirAdmon">
-                    <i class="bi bi-gear"></i>
-                    <a href="../../pages/catalogo/catalogo.html">Catálogo</a>
-                </li>
-                <li data-view="SalirAdmon">
-                    <i class="bi bi-gear"></i>
-                    <a href="../../pages/users/users.html">Salir</a>
-                </li>
-            </ul>
-        </nav>
-    </aside>
-</div>
+<aside class="sidebar">
+  <div class="logo-section">
+    <span>Módulo Administrativo</span>
+    <img src="/assets/img/logo-dark.svg" alt="Admin">
+  </div>
+  <nav>
+    <ul>
+      <li class="active" data-view="Dashboard">
+        <i class="bi bi-speedometer2"></i>
+        <span>Dashboard</span>
+      </li>
+      <li data-view="Productos">
+        <i class="bi bi-box-seam"></i>
+        <span>Productos</span>
+      </li>
+      <li data-view="Ordenes">
+        <i class="bi bi-receipt"></i>
+        <span>Ordenes</span>
+      </li>
+      <li data-view="Usuarios">
+        <i class="bi bi-people"></i>
+        <span>Usuarios</span>
+      </li>
+      <li data-view="Configuración">
+        <i class="bi bi-gear"></i>
+        <span>Configuración</span>
+      </li>
+      <li data-action="catalog">
+        <i class="bi bi-box-seam"></i>
+        <span>Catálogo</span>
+      </li>
+      <li data-action="logout">
+        <i class="bi bi-box-arrow-right"></i>
+        <span>Salir</span>
+      </li>
+    </ul>
+  </nav>
+</aside>

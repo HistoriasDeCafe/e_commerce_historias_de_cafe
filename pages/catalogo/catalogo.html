@@ -4,219 +4,42 @@
 <head>
     <meta charset="UTF-8">
     <title>Historias de Café - Catálogo</title>
-    <link rel="icon" type="image/x-icon" href="../../assets/img/iconoPepitaCafe-dark.svg">
+    <link rel="icon" type="image/x-icon" href="/assets/img/iconoPepitaCafe-dark.svg">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="catalogo.css">
-    <link rel="stylesheet" href="../../assets/css/paletaColores.css">
-    <link rel="stylesheet" href="../../components/navBar/navBar.css">
-    <link rel="stylesheet" href="../../components/footer/footer.css">
+    <link rel="stylesheet" href="/assets/css/paletaColores.css">
+    <link rel="stylesheet" href="/components/navBar/navBar.css">
+    <link rel="stylesheet" href="/components/footer/footer.css">
+    <link rel="stylesheet" href="/components/product/productCard.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
-    <!-- Iconos sugeridos (FontAwesome) -->
     <script src="https://mercadopago.com"></script>
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
     <div id="navbar-container"></div>
     <div id="carrito-container"></div>
-    <main>
-        <h2 class="title">CAFÉS DISPONIBLES</h2>
-
-        <section id="catalogo-container" class="grid-container">
-            <!-- Producto 1 -->
-            <article class="card">
-                <div class="image-placeholder">
-                    <img src="../../assets/imgProductos/neblinaDorada.png" alt="Bolsa de café Neblina Dorada">
-                </div>
-                <div class="card-content">
-                    <h3>Neblina Dorada</h3>
-                    <p class="finca">Finca El Recuerdo (Lotes Limitados)</p>
-                    <div class="stars">★★★★★</div>
-                    <p class="description">Esta edición limitada de Pacamara, procesada mediante el método 'honey',
-                        ofrece una dulzura sedosa excepcional. Con tueste medio-claro, revela complejas notas de
-                        albaricoque seco y azúcar morena.</p>
-                    <p class="price">$32.000</p>
-                    <div class="card-buttons">
-                        <button class="btn-cart">AÑADIR AL CARRITO</button>
-                        <button class="btn-detail">👁️ MOSTRAR DETALLE</button>
-                    </div>
-                </div>
-            </article>
-            <!-- producto 2 -->
-            <article class="card">
-                <div class="image-placeholder">
-                    <img src="../../assets/imgProductos/solLevante.png" alt="Bolsa de café Sol Levante">
-                </div>
-                <div class="card-content">
-                    <h3>Café Sol Levante</h3>
-                    <p class="finca">Finca Miravalles</p>
-                    <div class="stars">★★★★★</div>
-                    <p class="description">Un Geisha de tueste medio que captura la esencia del amanecer. Cosechado
-                        temprano para resaltar su perfil floral complejo, con acidez cítrica limpia y un final dulce a
-                        melocotón.</p>
-                    <p class="price">$26.000</p>
-                    <div class="card-buttons">
-                        <button class="btn-cart">AÑADIR AL CARRITO</button>
-                        <button class="btn-detail">👁️ MOSTRAR DETALLE</button>
-                    </div>
-                </div>
-            </article>
-            <!-- producto 3 -->
-            <article class="card">
-                <div class="image-placeholder">
-                    <img src="../../assets/imgProductos/brisaMarina.png" alt="Bolsa de café Brisa Marina">
-                </div>
-                <div class="card-content">
-                    <h3>Café Brisa Marina</h3>
-                    <p class="finca">Finca Costa Azul (Cultivo Costero)</p>
-                    <div class="stars">★★★★★</div>
-                    <p class="description">Cultivado cerca de la costa, este Bourbon Azul absorbe la esencia de la brisa
-                        marina. Su tueste medio-ligero revela una acidez brillante y limpia con sutiles notas de
-                        caramelo salado..</p>
-                    <p class="price">$23.000</p>
-                    <div class="card-buttons">
-                        <button class="btn-cart">AÑADIR AL CARRITO</button>
-                        <button class="btn-detail">👁️ MOSTRAR DETALLE</button>
-                    </div>
-                </div>
-            </article>
-            <!-- producto 4 -->
-            <article class="card">
-                <div class="image-placeholder">
-                    <img src="../../assets/imgProductos/esenciaAncestral.png" alt="Bolsa de café Esencia Ancestral">
-                </div>
-                <div class="card-content">
-                    <h3>Café Esencia Ancestral</h3>
-                    <p class="finca">Lote Herencia (Tradición Maya)</p>
-                    <div class="stars">★★★★☆</div>
-                    <p class="description">Un Arábica Criollo procesado naturalmente que honra la herencia maya. De
-                        cuerpo completo y rústico, ofrece profundas notas de cacao crudo y frutos secos fermentados.
-                        Tueste medio-oscuro.</p>
-                    <p class="price">$21.000</p>
-                    <div class="card-buttons">
-                        <button class="btn-cart">AÑADIR AL CARRITO</button>
-                        <button class="btn-detail">👁️ MOSTRAR DETALLE</button>
-                    </div>
-                </div>
-            </article>
-            <!-- producto 5 -->
-            <article class="card">
-                <div class="image-placeholder">
-                    <img src="../../assets/imgProductos/volcanFuego.png" alt="Bolsa de café Volcán Fuego">
-                </div>
-                <div class="card-content">
-                    <h3>Café Volcán Fuego</h3>
-                    <p class="finca">Finca Quemada (Suelos Volcánicos)</p>
-                    <div class="stars">★★★★★</div>
-                    <p class="description">Intenso y ahumado, con la fuerza de la tierra volcánica. Este tueste oscuro
-                        artesanal resalta notas profundas de chocolate amargo y melaza.</p>
-                    <p class="price">$19.000</p>
-                    <div class="card-buttons">
-                        <button class="btn-cart">AÑADIR AL CARRITO</button>
-                        <button class="btn-detail">👁️ MOSTRAR DETALLE</button>
-                    </div>
-                </div>
-            </article>
-            <!-- producto 6 -->
-            <article class="card">
-                <div class="image-placeholder">
-                    <img src="../../assets/imgProductos/selvaBioma.png" alt="Bolsa de café Selva Bioma">
-                </div>
-                <div class="card-content">
-                    <h3>Café Selva Bioma</h3>
-                    <p class="finca">Finca El Tucán</p>
-                    <div class="stars">★★★★★</div>
-                    <p class="description">Un café ético cultivado bajo la sombra nativa de la selva tropical. Su perfil
-                        es ligero y afrutado, con sutiles notas de bayas silvestres y acidez brillante. Biodegradable.
-                    </p>
-                    <p class="price">$18.000</p>
-                    <div class="card-buttons">
-                        <button class="btn-cart">AÑADIR AL CARRITO</button>
-                        <button class="btn-detail">👁️ MOSTRAR DETALLE</button>
-                    </div>
-                </div>
-            </article>
-            <!-- producto 7 -->
-            <article class="card">
-                <div class="image-placeholder">
-                    <img src="../../assets/imgProductos/cosechaNocturna.png" alt="Bolsa de café Cosecha Nocturna">
-                </div>
-                <div class="card-content">
-                    <h3>Café Cosecha Nocturna</h3>
-                    <p class="finca">Finca Luna Llena</p>
-                    <div class="stars">★★★★★</div>
-                    <p class="description">Un Pacamara místico cosechado bajo la luz de la luna llena. Este tueste lento
-                        y oscuro intensifica sus sabores, revelando notas ricas de ciruela pasa y cacao negro amargo.
-                    </p>
-                    <p class="price">$24.000</p>
-                    <div class="card-buttons">
-                        <button class="btn-cart">AÑADIR AL CARRITO</button>
-                        <button class="btn-detail">👁️ MOSTRAR DETALLE</button>
-                    </div>
-                </div>
-            </article>
-            <!-- producto 8 -->
-            <article class="card">
-                <div class="image-placeholder">
-                    <img src="../../assets/imgProductos/auroraFloral.png" alt="Bolsa de café Aurora Floral">
-                </div>
-                <div class="card-content">
-                    <h3>Café Aurora Floral</h3>
-                    <p class="finca">Finca Los Jazmines</p>
-                    <div class="stars">★★★★★</div>
-                    <p class="description">Un Geisha de proceso lavado increíblemente aromático. Su tueste ligero
-                        resalta un ramo floral complejo con notas distintivas de jazmín y flor de melocotón. Una
-                        experiencia matutina delicada.</p>
-                    <p class="price">$30.000</p>
-                    <div class="card-buttons">
-                        <button class="btn-cart">AÑADIR AL CARRITO</button>
-                        <button class="btn-detail">👁️ MOSTRAR DETALLE</button>
-                    </div>
-                </div>
-            </article>
-            <!-- producto 9 -->
-                     <article class="card">
-                <div class="image-placeholder">
-                    <img src="../../assets/imgProductos/montanaMistica.png" alt="Bolsa de café Montaña mística">
-                </div>
-                <div class="card-content">
-                    <h3>Café Montaña mística</h3>
-                    <p class="finca">Finca Las Nubes</p>
-                    <div class="stars">★★★★★</div>
-                    <p class="description">Cultivado a alturas extremas donde la niebla matutina acaricia los frutos. Este Pacamara Miel ofrece una dulzura sedosa con notas de albaricoque seco y azúcar morena.</p>
-                    <p class="price">$26.000</p>
-                    <div class="card-buttons">
-                        <button class="btn-cart">AÑADIR AL CARRITO</button>
-                        <button class="btn-detail">👁️ MOSTRAR DETALLE</button>
-                    </div>
-                </div>
-            </article>
-
-            <!-- producto 10 -->
-                     <article class="card">
-                <div class="image-placeholder">
-                    <img src="../../assets/imgProductos/auroraFloralRosada.png" alt="Bolsa de café Aurora Floral Rosada">
-                </div>
-                <div class="card-content">
-                    <h3>Café Aurora Floral Rosada</h3>
-                    <p class="finca">Finca Los Jazmines</p>
-                    <div class="stars">★★★★★</div>
-                    <p class="description">Como un amanecer en un jardín, este café captura aromas florales delicados. Es un Geisha ligero, suave y elegante, con notas sutiles de rosa y bergamota.</p>
-                    <p class="price">$28.000</p>
-                    <div class="card-buttons">
-                        <button class="btn-cart">AÑADIR AL CARRITO</button>
-                        <button class="btn-detail">👁️ MOSTRAR DETALLE</button>
-                    </div>
-                </div>
-            </article>
+    
+    <main class="catalog-main">
+        <div class="catalog-header">
+            <h1 class="title">Nuestra Selección de Cafés</h1>
+            <p class="subtitle">Descubre los mejores granos de café de origen seleccionado</p>
+        </div>
+        
+        <section class="grid-container" id="catalogo-container">
+            <div class="loading-state" id="loading-state">
+                <div class="spinner"></div>
+                <p>Cargando nuestros cafés premium...</p>
+            </div>
         </section>
     </main>
+    
     <div id="footer-container"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../../js/catalogo.js"></script>
-    <script src="../../js/cart.js"></script>
-    <script src="../../js/main.js"></script>
+    <script src="/js/catalogo.js"></script>
+    <script src="/js/cart.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 
 </html>

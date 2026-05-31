@@ -17,6 +17,9 @@ const BASE_URL = (() => {
   return '/';
 })();
 
+// Hacer BASE_URL disponible globalmente para otros scripts
+window.BASE_URL = BASE_URL;
+
 function loadComponent(containerId, relativePath, callback) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -70,26 +73,54 @@ function initNavbar() {
   const navLinks = document.querySelectorAll(".nav-link");
   const menuCollapse = document.getElementById("navbarMenu");
   const usuarioActivo = JSON.parse(localStorage.getItem("usuarioActivo"));
-  const userContent = document.getElementById("user-status-content");
+  const userInfo = document.getElementById("user-info");
+  const userName = document.getElementById("user-name");
   const authBtn = document.getElementById("nav-auth-btn");
+  const adminLink = document.getElementById("admin-link");
 
-  if (usuarioActivo && authBtn && userContent) {
+  // Limpiar carrito al cargar si hay cambio de usuario
+  const lastUserId = localStorage.getItem('lastUserId');
+  const currentUserId = usuarioActivo ? usuarioActivo.id : null;
+  
+  if (lastUserId && currentUserId && lastUserId !== String(currentUserId)) {
+    localStorage.removeItem('carritoCafe');
+    console.log('Carrito limpiado por cambio de usuario');
+  }
+  
+  if (currentUserId) {
+    localStorage.setItem('lastUserId', String(currentUserId));
+  }
+
+  if (usuarioActivo && authBtn && userInfo && userName) {
     // ESTADO: LOGUEADO
-    const primerNombre = usuarioActivo.name.split(" ")[0];
-    userContent.innerHTML = `<span class="welcome-msg">Hola, <strong>${primerNombre}</strong></span>`;
+    const primerNombre = usuarioActivo.name ? usuarioActivo.name.split(" ")[0] : (usuarioActivo.fullName ? usuarioActivo.fullName.split(" ")[0] : 'Usuario');
+    userName.textContent = primerNombre;
+    userInfo.style.display = "flex";
     
-    authBtn.textContent = "Salir";
-    authBtn.classList.add("btn-logout");
+    authBtn.innerHTML = '<i class="bi bi-box-arrow-right"></i> Cerrar Sesión';
+    authBtn.classList.remove("login-btn");
+    authBtn.classList.add("logout-btn");
+
+    // Mostrar admin link si es ADMIN
+    if (adminLink && usuarioActivo.role === 'ADMIN') {
+      adminLink.style.display = "flex";
+    }
 
     authBtn.onclick = () => {
       localStorage.removeItem("usuarioActivo");
+      localStorage.removeItem("authToken");
       window.location.href = BASE_URL + "pages/home/home.html";
     };
-  } else if (authBtn && userContent) {
+  } else if (authBtn && userInfo && userName) {
     // ESTADO: INVITADO
-    userContent.innerHTML = "";
-    authBtn.textContent = "Iniciar Sesión";
-    authBtn.classList.remove("btn-logout");
+    userInfo.style.display = "none";
+    authBtn.innerHTML = '<i class="bi bi-person"></i> Iniciar Sesión';
+    authBtn.classList.remove("logout-btn");
+    authBtn.classList.add("login-btn");
+
+    if (adminLink) {
+      adminLink.style.display = "none";
+    }
 
     authBtn.onclick = () => {
       window.location.href = BASE_URL + "pages/users/users.html";

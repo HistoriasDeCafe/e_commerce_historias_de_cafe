@@ -1,0 +1,806 @@
+// Admin Dashboard JavaScript
+// State
+let activeView = 'Dashboard';
+let listaProductos = [];
+let listaUsuarios = [];
+let listaOrdenes = [];
+let currentPageProductos = 1;
+let currentPageUsuarios = 1;
+let currentPageOrdenes = 1;
+const itemsPerPage = 5;
+
+// API URL
+const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:8080'
+  : 'https://e-commerce-historias-de-cafe-backend.onrender.com';
+
+// Initialize
+document.addEventListener('DOMContentLoaded', async () => {
+  console.log('Admin page DOMContentLoaded');
+  
+  // Check user authentication
+  const user = localStorage.getItem('usuarioActivo');
+  console.log('User from localStorage:', user);
+  
+  if (!user) {
+    console.log('No user found, redirecting to login');
+    window.location.href = '/pages/users/users.html';
+    return;
+  }
+
+  const userData = JSON.parse(user);
+  console.log('User data:', userData);
+  
+  if (userData.role !== 'ADMIN') {
+    console.log('User is not ADMIN, redirecting');
+    Swal.fire({
+      icon: 'error',
+      iconColor: '#d93025',
+      title: 'Acceso Denegado',
+      text: 'No puedes acceder al dashboard de administrador.',
+      confirmButtonColor: '#532721'
+    }).then(() => {
+      window.location.href = '/pages/home/home.html';
+    });
+    return;
+  }
+
+  console.log('User is ADMIN, proceeding to load data');
+
+  // Load sidebar
+  await loadSidebar();
+
+  // Load data
+  console.log('Starting to load products...');
+  await loadProductos();
+  console.log('Products loaded, listaProductos:', listaProductos);
+  
+  await loadUsuarios();
+  await loadOrdenes();
+
+  // Update dashboard stats
+  updateDashboardStats();
+
+  // Initialize event listeners
+  initializeEventListeners();
+  
+  console.log('Admin initialization complete');
+});
+
+// Load sidebar component
+async function loadSidebar() {
+  try {
+    const response = await fetch('/components/menuAdmin/menuAdmin.html');
+    const html = await response.text();
+    document.getElementById('sidebar-container').innerHTML = html;
+    initializeSidebar();
+  } catch (error) {
+    console.error('Error loading sidebar:', error);
+  }
+}
+
+// Initialize sidebar navigation
+function initializeSidebar() {
+  const menuItems = document.querySelectorAll('.sidebar nav ul li');
+  
+  menuItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const view = item.dataset.view;
+      const action = item.dataset.action;
+
+      if (action === 'catalog') {
+        window.location.href = '/pages/catalogo/catalogo.html';
+        return;
+      }
+
+      if (action === 'logout') {
+        localStorage.removeItem('usuarioActivo');
+        localStorage.removeItem('authToken');
+        window.location.href = '/pages/users/users.html';
+        return;
+      }
+
+      if (view) {
+        switchView(view);
+      }
+    });
+  });
+}
+
+// Switch between views
+function switchView(viewName) {
+  // Update active state in sidebar
+  document.querySelectorAll('.sidebar nav ul li').forEach(item => {
+    item.classList.remove('active');
+    if (item.dataset.view === viewName) {
+      item.classList.add('active');
+    }
+  });
+
+  // Update title
+  document.getElementById('current-view').textContent = viewName;
+
+  // Hide all views
+  document.querySelectorAll('[id^="view-"]').forEach(view => {
+    view.style.display = 'none';
+  });
+
+  // Show selected view
+  const selectedView = document.getElementById(`view-${viewName.toLowerCase()}`);
+  if (selectedView) {
+    selectedView.style.display = 'block';
+  }
+
+  // Update data based on view
+  if (viewName === 'Productos') {
+    renderProductosTable();
+  } else if (viewName === 'Usuarios') {
+    renderUsuariosTable();
+  } else if (viewName === 'Ordenes') {
+    renderOrdenesTable();
+  } else if (viewName === 'Dashboard') {
+    updateDashboardStats();
+  }
+
+  activeView = viewName;
+}
+
+// Load products from API
+async function loadProductos() {
+  try {
+    const token = localStorage.getItem('authToken');
+    console.log('Loading products from:', `${API_URL}/products`);
+    console.log('Token:', token ? 'Present' : 'Missing');
+    
+    const response = await fetch(`${API_URL}/products`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    console.log('Response status:', response.status);
+
+    if (response.ok) {
+      const products = await response.json();
+      console.log('Raw products from API:', products);
+      
+      listaProductos = products.map(p => ({
+        id: p.idProduct || p.id_product || p.id,
+        nombre: p.name || 'Sin nombre',
+        origen: p.origin || '',
+        tostado: p.roast || '',
+        region: p.categoryId || '',
+        descripcion: p.description || '',
+        precio: p.price || 0,
+        stock: p.stock || 0,
+        imagen: p.imagen || '',
+        estado: 'activo'
+      }));
+      
+      console.log('Mapped listaProductos:', listaProductos);
+    } else {
+      console.error('Failed to load products. Status:', response.status);
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
+    }
+  } catch (error) {
+    console.error('Error loading products:', error);
+  }
+}
+
+// Load users from API
+async function loadUsuarios() {
+  try {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/users`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (response.ok) {
+      const users = await response.json();
+      listaUsuarios = users.map(u => ({
+        id: u.id,
+        nombre: u.name,
+        email: u.email,
+        rol: u.role,
+        estado: u.stateActive ? 'activo' : 'inactivo'
+      }));
+    }
+  } catch (error) {
+    console.error('Error loading users:', error);
+  }
+}
+
+// Load orders from API
+async function loadOrdenes() {
+  try {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/orders`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (response.ok) {
+      const orders = await response.json();
+      listaOrdenes = orders.map(o => ({
+        id: o.id,
+        userId: o.userId,
+        stateOrder: o.stateOrder,
+        subtotal: o.subtotal,
+        total: o.total,
+        orderDate: o.orderDate,
+        details: o.details || []
+      }));
+    }
+  } catch (error) {
+    console.error('Error loading orders:', error);
+  }
+}
+
+// Update dashboard statistics
+function updateDashboardStats() {
+  const totalVentas = listaOrdenes.reduce((sum, orden) => sum + (orden.total || 0), 0);
+  const totalOrdenes = listaOrdenes.length;
+  const totalUsuarios = listaUsuarios.length;
+  const totalStockBajo = listaProductos.filter(p => p.stock < 5).length;
+
+  document.getElementById('total-ventas').textContent = `$${totalVentas.toLocaleString()}`;
+  document.getElementById('total-ordenes').textContent = totalOrdenes;
+  document.getElementById('total-usuarios').textContent = totalUsuarios;
+  document.getElementById('total-stock-bajo').textContent = totalStockBajo;
+
+  // Update featured products
+  updateFeaturedProducts();
+}
+
+// Update featured products widget
+function updateFeaturedProducts() {
+  const featuredContainer = document.getElementById('featured-products');
+  const featuredProducts = listaProductos
+    .filter(p => p.estado === 'activo')
+    .sort((a, b) => a.stock - b.stock)
+    .slice(0, 3);
+
+  if (featuredProducts.length === 0) {
+    featuredContainer.innerHTML = '<div class="empty-featured"><p>No hay productos destacados</p></div>';
+    return;
+  }
+
+  featuredContainer.innerHTML = featuredProducts.map((producto, index) => `
+    <div class="featured-item">
+      <span>${producto.nombre}</span>
+      <span class="badge ${index === 0 ? 'badge-top' : index === 1 ? 'badge-nuevo' : 'badge-popular'}">
+        ${index === 0 ? 'Top' : index === 1 ? 'Nuevo' : 'Popular'}
+      </span>
+    </div>
+  `).join('');
+}
+
+// Render products table
+function renderProductosTable() {
+  console.log('renderProductosTable called');
+  console.log('listaProductos:', listaProductos);
+  console.log('listaProductos.length:', listaProductos.length);
+  
+  const tbody = document.getElementById('productos-table-body');
+  const emptyState = document.getElementById('productos-empty-state');
+  const pagination = document.getElementById('productos-pagination');
+
+  console.log('tbody element:', tbody);
+  console.log('emptyState element:', emptyState);
+  console.log('pagination element:', pagination);
+
+  if (!tbody) {
+    console.error('productos-table-body not found');
+    return;
+  }
+
+  document.getElementById('productos-count').textContent = listaProductos.length;
+
+  if (listaProductos.length === 0) {
+    console.log('No products to display, showing empty state');
+    tbody.innerHTML = '';
+    emptyState.style.display = 'block';
+    pagination.style.display = 'none';
+    return;
+  }
+
+  console.log('Rendering', listaProductos.length, 'products');
+  emptyState.style.display = 'none';
+  pagination.style.display = 'flex';
+
+  const totalPages = Math.ceil(listaProductos.length / itemsPerPage);
+  const start = (currentPageProductos - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  const paginated = listaProductos.slice(start, end);
+
+  console.log('Paginated products:', paginated);
+
+  tbody.innerHTML = paginated.map(p => `
+    <tr>
+      <td class="text-left">
+        <div class="product-cell">
+          <div class="product-name">${p.nombre}</div>
+          <div class="product-desc">${p.descripcion ? p.descripcion.substring(0, 50) + '...' : ''}</div>
+        </div>
+      </td>
+      <td class="text-left">${p.origen}</td>
+      <td class="text-left">${p.tostado}</td>
+      <td class="text-left">${getRegionName(p.region)}</td>
+      <td class="text-right">$${p.precio.toLocaleString()}</td>
+      <td class="text-right">${p.stock}</td>
+      <td class="text-center">
+        <span class="status-pill ${p.estado === 'activo' ? 'badge-activo' : 'badge-inactivo'}">
+          ${p.estado}
+        </span>
+      </td>
+      <td class="text-center">
+        <div class="actions-wrapper">
+          <button class="btn-table-edit" onclick="editProduct(${p.id})">
+            <i class="bi bi-pencil"></i> Editar
+          </button>
+          <button class="btn-table-delete" onclick="deleteProduct(${p.id})">
+            <i class="bi bi-trash"></i> Eliminar
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+
+  console.log('Table HTML updated');
+
+  // Update pagination info
+  document.getElementById('productos-showing-start').textContent = start + 1;
+  document.getElementById('productos-showing-end').textContent = Math.min(end, listaProductos.length);
+  document.getElementById('productos-total').textContent = listaProductos.length;
+  document.getElementById('productos-current-page').textContent = currentPageProductos;
+  document.getElementById('productos-total-pages').textContent = totalPages;
+
+  document.getElementById('productos-prev').disabled = currentPageProductos === 1;
+  document.getElementById('productos-next').disabled = currentPageProductos === totalPages;
+}
+
+// Render users table
+function renderUsuariosTable() {
+  const tbody = document.getElementById('usuarios-table-body');
+  const emptyState = document.getElementById('usuarios-empty-state');
+  const pagination = document.getElementById('usuarios-pagination');
+
+  if (listaUsuarios.length === 0) {
+    tbody.innerHTML = '';
+    emptyState.style.display = 'block';
+    pagination.style.display = 'none';
+    return;
+  }
+
+  emptyState.style.display = 'none';
+  pagination.style.display = 'flex';
+
+  const totalPages = Math.ceil(listaUsuarios.length / itemsPerPage);
+  const start = (currentPageUsuarios - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  const paginated = listaUsuarios.slice(start, end);
+
+  tbody.innerHTML = paginated.map(u => `
+    <tr>
+      <td class="text-left">${u.nombre}</td>
+      <td class="text-left">${u.email}</td>
+      <td class="text-center">
+        <span class="status-pill ${u.rol === 'ADMIN' ? 'badge-activo' : 'badge-inactivo'}">${u.rol || 'CLIENT'}</span>
+      </td>
+      <td class="text-center">
+        <span class="status-pill ${u.estado === 'activo' ? 'badge-activo' : 'badge-inactivo'}">${u.estado || 'activo'}</span>
+      </td>
+      <td class="text-center">
+        <div class="actions-wrapper">
+          <button class="btn-table-edit" onclick="editUser(${u.id})">
+            <i class="bi bi-pencil"></i> Editar
+          </button>
+          <button class="btn-table-delete" onclick="deleteUser(${u.id})">
+            <i class="bi bi-trash"></i> Eliminar
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+
+  // Update pagination info
+  document.getElementById('usuarios-showing-start').textContent = start + 1;
+  document.getElementById('usuarios-showing-end').textContent = Math.min(end, listaUsuarios.length);
+  document.getElementById('usuarios-total').textContent = listaUsuarios.length;
+  document.getElementById('usuarios-current-page').textContent = currentPageUsuarios;
+  document.getElementById('usuarios-total-pages').textContent = totalPages;
+
+  document.getElementById('usuarios-prev').disabled = currentPageUsuarios === 1;
+  document.getElementById('usuarios-next').disabled = currentPageUsuarios === totalPages;
+}
+
+// Render orders table
+function renderOrdenesTable() {
+  const tbody = document.getElementById('ordenes-table-body');
+  const emptyState = document.getElementById('ordenes-empty-state');
+  const pagination = document.getElementById('ordenes-pagination');
+
+  document.getElementById('ordenes-count').textContent = listaOrdenes.length;
+
+  if (listaOrdenes.length === 0) {
+    tbody.innerHTML = '';
+    emptyState.style.display = 'block';
+    pagination.style.display = 'none';
+    return;
+  }
+
+  emptyState.style.display = 'none';
+  pagination.style.display = 'flex';
+
+  const totalPages = Math.ceil(listaOrdenes.length / itemsPerPage);
+  const start = (currentPageOrdenes - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  const paginated = listaOrdenes.slice(start, end);
+
+  tbody.innerHTML = paginated.map(o => `
+    <tr>
+      <td class="text-left">${o.id}</td>
+      <td class="text-left">${formatDate(o.orderDate)}</td>
+      <td class="text-left">${o.userId}</td>
+      <td class="text-center">
+        <span class="status-pill ${o.stateOrder === 'Completada' ? 'badge-activo' : 'badge-inactivo'}">
+          ${o.stateOrder}
+        </span>
+      </td>
+      <td class="text-right">${formatCurrency(o.subtotal)}</td>
+      <td class="text-right">${formatCurrency(o.total)}</td>
+      <td class="text-center">
+        <div class="actions-wrapper">
+          <button class="btn-table-edit" onclick="viewOrderDetails(${o.id})">
+            <i class="bi bi-eye"></i> Ver Detalles
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+
+  // Update pagination info
+  document.getElementById('ordenes-showing-start').textContent = start + 1;
+  document.getElementById('ordenes-showing-end').textContent = Math.min(end, listaOrdenes.length);
+  document.getElementById('ordenes-total').textContent = listaOrdenes.length;
+  document.getElementById('ordenes-current-page').textContent = currentPageOrdenes;
+  document.getElementById('ordenes-total-pages').textContent = totalPages;
+
+  document.getElementById('ordenes-prev').disabled = currentPageOrdenes === 1;
+  document.getElementById('ordenes-next').disabled = currentPageOrdenes === totalPages;
+}
+
+// Helper functions
+function getRegionName(regionId) {
+  const regions = {
+    '1': 'Andina',
+    '2': 'Caribe',
+    '3': 'Pacífica',
+    '4': 'Orinoquía',
+    '5': 'Amazonía'
+  };
+  return regions[regionId] || regionId || '-';
+}
+
+function formatDate(date) {
+  if (!date) return '-';
+  const d = new Date(date);
+  return d.toLocaleString('es-CO', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+function formatCurrency(amount) {
+  if (amount === null || amount === undefined) return '-';
+  return Number(amount).toLocaleString('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+}
+
+// Initialize event listeners
+function initializeEventListeners() {
+  // Toggle sidebar
+  document.querySelector('.toggle-btn').addEventListener('click', () => {
+    document.querySelector('.sidebar').classList.toggle('collapsed');
+  });
+
+  // Product pagination
+  document.getElementById('productos-prev').addEventListener('click', () => {
+    if (currentPageProductos > 1) {
+      currentPageProductos--;
+      renderProductosTable();
+    }
+  });
+
+  document.getElementById('productos-next').addEventListener('click', () => {
+    const totalPages = Math.ceil(listaProductos.length / itemsPerPage);
+    if (currentPageProductos < totalPages) {
+      currentPageProductos++;
+      renderProductosTable();
+    }
+  });
+
+  // User pagination
+  document.getElementById('usuarios-prev').addEventListener('click', () => {
+    if (currentPageUsuarios > 1) {
+      currentPageUsuarios--;
+      renderUsuariosTable();
+    }
+  });
+
+  document.getElementById('usuarios-next').addEventListener('click', () => {
+    const totalPages = Math.ceil(listaUsuarios.length / itemsPerPage);
+    if (currentPageUsuarios < totalPages) {
+      currentPageUsuarios++;
+      renderUsuariosTable();
+    }
+  });
+
+  // Order pagination
+  document.getElementById('ordenes-prev').addEventListener('click', () => {
+    if (currentPageOrdenes > 1) {
+      currentPageOrdenes--;
+      renderOrdenesTable();
+    }
+  });
+
+  document.getElementById('ordenes-next').addEventListener('click', () => {
+    const totalPages = Math.ceil(listaOrdenes.length / itemsPerPage);
+    if (currentPageOrdenes < totalPages) {
+      currentPageOrdenes++;
+      renderOrdenesTable();
+    }
+  });
+
+  // Reload orders
+  document.getElementById('btn-reload-ordenes').addEventListener('click', async () => {
+    await loadOrdenes();
+    renderOrdenesTable();
+    updateDashboardStats();
+  });
+
+  // Close modals
+  document.getElementById('close-modal-product').addEventListener('click', closeProductModal);
+  document.getElementById('close-modal-user').addEventListener('click', closeUserModal);
+  document.getElementById('close-modal-orden').addEventListener('click', closeOrderModal);
+
+  // Add product buttons
+  document.getElementById('btn-add-product').addEventListener('click', openAddProductModal);
+  document.getElementById('btn-add-first-product').addEventListener('click', openAddProductModal);
+
+  // Modal overlay click to close
+  document.querySelectorAll('.modal-overlay').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+  });
+
+  // User form submit
+  document.getElementById('user-form').addEventListener('submit', handleUserSubmit);
+}
+
+// Modal functions
+function closeProductModal() {
+  document.getElementById('modal-producto').style.display = 'none';
+  // Reset form when closing
+  if (typeof resetForm === 'function') {
+    resetForm();
+  }
+}
+
+function openAddProductModal() {
+  const modal = document.getElementById('modal-producto');
+  if (modal) {
+    modal.style.display = 'flex';
+  }
+
+  // Load product form
+  loadProductForm().then(() => {
+    // Reset form for new product
+    if (typeof resetForm === 'function') {
+      resetForm();
+    }
+  });
+}
+
+function closeUserModal() {
+  document.getElementById('modal-usuario').style.display = 'none';
+}
+
+function closeOrderModal() {
+  document.getElementById('modal-orden').style.display = 'none';
+}
+
+// Product operations
+function editProduct(id) {
+  const product = listaProductos.find(p => p.id === id);
+  if (!product) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'No se encontró el producto',
+      confirmButtonColor: '#532721'
+    });
+    return;
+  }
+
+  // Open modal
+  const modal = document.getElementById('modal-producto');
+  if (modal) {
+    modal.style.display = 'flex';
+  }
+
+  // Load product form
+  loadProductForm().then(() => {
+    // Load product data into form
+    if (typeof loadProductForEdit === 'function') {
+      loadProductForEdit(product);
+    }
+  });
+}
+
+function deleteProduct(id) {
+  const product = listaProductos.find(p => p.id === id);
+  if (!product) return;
+
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: `Vas a eliminar "${product.nombre}" de la base de datos.`,
+    icon: 'warning',
+    iconColor: '#d33',
+    showCancelButton: true,
+    confirmButtonColor: '#532721',
+    cancelButtonColor: '#7a7a7a',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+    reverseButtons: true
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch(`${API_URL}/products/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) throw new Error('No se pudo eliminar el producto');
+
+        await loadProductos();
+        renderProductosTable();
+        updateDashboardStats();
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Eliminado',
+          text: 'El producto ha sido removido con éxito.',
+          confirmButtonColor: '#B08D57',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      } catch (error) {
+        console.error('Error al eliminar producto:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al eliminar',
+          text: error.message || 'No se pudo completar la acción',
+          confirmButtonColor: '#532721'
+        });
+      }
+    }
+  });
+}
+
+// Load product form into modal
+async function loadProductForm() {
+  try {
+    const response = await fetch('/components/product/productForm.html');
+    if (!response.ok) throw new Error("No se pudo cargar el formulario");
+
+    const htmlFormulario = await response.text();
+    const container = document.getElementById("productform-container");
+    if (container) {
+      container.innerHTML = htmlFormulario;
+      if (typeof initProductLogic === 'function') {
+        initProductLogic();
+      }
+    }
+  } catch (error) {
+    console.error("Error cargando el form:", error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'No se pudo cargar el formulario de producto.',
+      confirmButtonColor: '#532721'
+    });
+  }
+}
+
+function editUser(id) {
+  console.log('Edit user:', id);
+  // TODO: Implement edit user logic
+}
+
+function deleteUser(id) {
+  console.log('Delete user:', id);
+  // TODO: Implement delete user logic
+}
+
+function viewOrderDetails(id) {
+  const orden = listaOrdenes.find(o => o.id === id);
+  if (orden) {
+    document.getElementById('orden-id').textContent = orden.id;
+    document.getElementById('orden-details').innerHTML = `
+      <div class="detail-row">
+        <span class="detail-label">ID Orden:</span>
+        <span class="detail-value">${orden.id}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Fecha:</span>
+        <span class="detail-value">${formatDate(orden.orderDate)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Usuario ID:</span>
+        <span class="detail-value">${orden.userId}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Estado:</span>
+        <span class="detail-value">
+          <span class="status-pill ${orden.stateOrder === 'Completada' ? 'badge-activo' : 'badge-inactivo'}">
+            ${orden.stateOrder}
+          </span>
+        </span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Subtotal:</span>
+        <span class="detail-value">${formatCurrency(orden.subtotal)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Total:</span>
+        <span class="detail-value" style="font-weight: bold; font-size: 1.2rem;">${formatCurrency(orden.total)}</span>
+      </div>
+      <hr style="margin: 1.5rem 0; border: none; height: 2px; background: linear-gradient(90deg, #e8e0d5 0%, #b08d57 50%, #e8e0d5 100%);">
+      <h4 style="margin-bottom: 1rem; color: #532721;">Productos en la Orden</h4>
+      ${orden.details && orden.details.length > 0 ? orden.details.map(detalle => `
+        <div class="product-detail-item">
+          <div class="product-detail-info">
+            <span class="product-detail-label">Producto ID:</span>
+            <span class="product-detail-value">${detalle.productId}</span>
+          </div>
+          <div class="product-detail-info">
+            <span class="product-detail-label">Cantidad:</span>
+            <span class="product-detail-value">${detalle.quantityProducts}</span>
+          </div>
+        </div>
+      `).join('') : '<div class="empty-details"><p>No hay detalles de productos disponibles</p></div>'}
+    `;
+    document.getElementById('modal-orden').style.display = 'flex';
+  }
+}
+
+function handleUserSubmit(e) {
+  e.preventDefault();
+  console.log('User form submitted');
+  // TODO: Implement user save logic
+}

@@ -1,86 +1,361 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="../../assets/img/iconoPepitaCafe-dark.svg">
-    <title>Admin</title>
-    <!-- Librería de Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="admin.css">
-    <link rel="stylesheet" href="../../components/product/productForm.css">
-    <link rel="stylesheet" href="../../components/menuAdmin/menuAdmin.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="/assets/img/iconoPepitaCafe-dark.svg">
+  <title>Admin Dashboard</title>
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="/components/product/productForm.css">
+  <link rel="stylesheet" href="/components/menuAdmin/menuAdmin.css">
 </head>
-
 <body>
-    <div class="dashboard-container">
+  <div class="dashboard-container">
+    <div id="sidebar-container"></div>
 
-        <div id="sidebar-container"></div>
+    <main class="main-content">
+      <header class="top-bar">
+        <button class="toggle-btn"><i class="bi bi-list"></i></button>
+        <span class="fw-bold" id="current-view">Dashboard</span>
+        <div class="user-info">👤</div>
+      </header>
 
-        <main class="main-content">
-            <header class="top-bar">
-                <!-- <span>Dashboard</span>
-            <div class="user-info">🔔 👤 🖼️</div> -->
-            </header>
+      <section class="content-padding fade-in" id="main-content">
+        <!-- DASHBOARD VIEW -->
+        <div id="view-dashboard">
+          <div class="dashboard-header">
+            <h2>Dashboard</h2>
+            <p class="welcome-text">Bienvenido de vuelta a Historias de Café</p>
+          </div>
+          
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="bi bi-currency-dollar"></i>
+              </div>
+              <strong id="total-ventas">$0</strong>
+              <span>Ventas Totales</span>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="bi bi-receipt"></i>
+              </div>
+              <strong id="total-ordenes">0</strong>
+              <span>Órdenes Hoy</span>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="bi bi-people"></i>
+              </div>
+              <strong id="total-usuarios">0</strong>
+              <span>Usuarios Activos</span>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="bi bi-exclamation-triangle"></i>
+              </div>
+              <strong id="total-stock-bajo">0</strong>
+              <span>Stock Bajo</span>
+            </div>
+          </div>
 
-            <section class="content-padding">
-                <h2>Dashboard</h2>
-                <p>Bienvenido de vuelta a historias de café</p>
-
-                <div class="stats-grid">
-                    <div class="stat-card"><strong>$0</strong><span>Ventas Totales</span></div>
-                    <div class="stat-card"><strong>0</strong><span>Ordenes hoy</span></div>
-                    <div class="stat-card"><strong>0</strong><span>Usuarios Activos</span></div>
-                    <div class="stat-card"><strong>0</strong><span>Stock bajo</span></div>
+          <div class="dashboard-widgets">
+            <div class="widget-card">
+              <h3><i class="bi bi-graph-up"></i> Actividad Reciente</h3>
+              <div class="activity-list">
+                <div class="activity-item">
+                  <span class="activity-time">Hace 5 min</span>
+                  <span class="activity-text">Nueva orden #1234</span>
                 </div>
-
-                <div class="form-section">
-                    <h3>Cargar Nuevo Producto</h3>
-
+                <div class="activity-item">
+                  <span class="activity-time">Hace 15 min</span>
+                  <span class="activity-text">Usuario registrado</span>
                 </div>
+                <div class="activity-item">
+                  <span class="activity-time">Hace 30 min</span>
+                  <span class="activity-text">Producto actualizado</span>
+                </div>
+              </div>
+            </div>
 
-                <div class="table-section">
-    <div class="table-header">
-        <h3>Productos Disponibles</h3>
-        <button class="btn-add">
-            <i class="bi bi-plus-circle me-2"></i> Añadir productos
-        </button>
-    </div>
-    
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th class="text-left">Nombre del Producto</th>
+            <div class="widget-card">
+              <h3><i class="bi bi-box-seam"></i> Productos Destacados</h3>
+              <div class="featured-products" id="featured-products">
+                <div class="empty-featured">
+                  <p>No hay productos destacados</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRODUCTOS VIEW -->
+        <div id="view-productos" style="display: none;">
+          <div class="table-section">
+            <div class="table-header-container">
+              <h3>Gestión de Productos</h3>
+              <div style="font-size: 0.9rem; color: #666;">
+                Total: <span id="productos-count">0</span> productos | Página <span id="productos-page">1</span> de <span id="productos-total-pages">1</span>
+              </div>
+              <button class="btn-cafe-admin" id="btn-add-product">
+                <i class="bi bi-plus-circle"></i> Añadir Producto
+              </button>
+            </div>
+            
+            <div class="table-container">
+              <table class="table table-expandable">
+                <thead>
+                  <tr>
+                    <th class="text-left">Producto</th>
+                    <th class="text-left">Origen</th>
+                    <th class="text-left">Tostado</th>
+                    <th class="text-left">Región</th>
                     <th class="text-right">Precio</th>
                     <th class="text-right">Stock</th>
                     <th class="text-center">Estado</th>
                     <th class="text-center">Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="cuerpo-tabla">
-                <!-- Se llena dinámicamente -->
-            </tbody>
-        </table>
-    </div>
-</div>
-            </section>
-        </main>
-    </div>
-    <div id="modal-producto" class="modal-overlay">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h3>Añadir Nuevo Producto</h3>
-            <div id="productform-container"></div>
+                  </tr>
+                </thead>
+                <tbody id="productos-table-body">
+                  <!-- Se llena dinámicamente -->
+                </tbody>
+              </table>
+            </div>
+            
+            <div id="productos-empty-state" class="empty-state" style="display: none;">
+              <i class="bi bi-inbox"></i>
+              <p>No hay productos registrados</p>
+              <button class="btn-cafe-admin" id="btn-add-first-product">
+                <i class="bi bi-plus-circle"></i> Agregar Primer Producto
+              </button>
+            </div>
+            
+            <!-- Paginación productos -->
+            <div id="productos-pagination" class="pagination-container" style="display: none;">
+              <div class="pagination-info">
+                Mostrando <span id="productos-showing-start">0</span> - <span id="productos-showing-end">0</span> de <span id="productos-total">0</span> productos
+              </div>
+              <div class="pagination-controls">
+                <button class="pagination-btn" id="productos-prev" disabled>
+                  <i class="bi bi-chevron-left"></i> Anterior
+                </button>
+                <span class="pagination-pages">
+                  Página <span id="productos-current-page">1</span> de <span id="productos-total-pages">1</span>
+                </span>
+                <button class="pagination-btn" id="productos-next" disabled>
+                  Siguiente <i class="bi bi-chevron-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <!-- ORDENES VIEW -->
+        <div id="view-ordenes" style="display: none;">
+          <div class="table-section">
+            <div class="table-header-container">
+              <h3>Gestión de Órdenes</h3>
+              <div style="font-size: 0.9rem; color: #666;">
+                Total: <span id="ordenes-count">0</span> órdenes | Página <span id="ordenes-page">1</span> de <span id="ordenes-total-pages">1</span>
+              </div>
+              <button class="btn-cafe-admin" id="btn-reload-ordenes">
+                <i class="bi bi-arrow-clockwise"></i> Recargar
+              </button>
+            </div>
+            
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th class="text-left">ID Orden</th>
+                    <th class="text-left">Fecha</th>
+                    <th class="text-left">Usuario ID</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-right">Subtotal</th>
+                    <th class="text-right">Total</th>
+                    <th class="text-center">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="ordenes-table-body">
+                  <!-- Se llena dinámicamente -->
+                </tbody>
+              </table>
+            </div>
+            
+            <div id="ordenes-empty-state" class="empty-state" style="display: none;">
+              <i class="bi bi-receipt"></i>
+              <p>No hay órdenes registradas</p>
+            </div>
+            
+            <!-- Paginación órdenes -->
+            <div id="ordenes-pagination" class="pagination-container" style="display: none;">
+              <div class="pagination-info">
+                Mostrando <span id="ordenes-showing-start">0</span> - <span id="ordenes-showing-end">0</span> de <span id="ordenes-total">0</span> órdenes
+              </div>
+              <div class="pagination-controls">
+                <button class="pagination-btn" id="ordenes-prev" disabled>
+                  <i class="bi bi-chevron-left"></i> Anterior
+                </button>
+                <span class="pagination-pages">
+                  Página <span id="ordenes-current-page">1</span> de <span id="ordenes-total-pages">1</span>
+                </span>
+                <button class="pagination-btn" id="ordenes-next" disabled>
+                  Siguiente <i class="bi bi-chevron-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- USUARIOS VIEW -->
+        <div id="view-usuarios" style="display: none;">
+          <div class="table-section">
+            <div class="table-header-container">
+              <h3>Gestión de Usuarios</h3>
+              <button class="btn-cafe-admin" id="btn-add-user">
+                <i class="bi bi-plus-circle"></i> Añadir Usuario
+              </button>
+            </div>
+            
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th class="text-left">Nombre</th>
+                    <th class="text-left">Email</th>
+                    <th class="text-center">Rol</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-center">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="usuarios-table-body">
+                  <!-- Se llena dinámicamente -->
+                </tbody>
+              </table>
+            </div>
+            
+            <div id="usuarios-empty-state" class="empty-state" style="display: none;">
+              <i class="bi bi-people"></i>
+              <p>No hay usuarios registrados</p>
+              <button class="btn-cafe-admin" id="btn-add-first-user">
+                <i class="bi bi-plus-circle"></i> Agregar Primer Usuario
+              </button>
+            </div>
+            
+            <!-- Paginación usuarios -->
+            <div id="usuarios-pagination" class="pagination-container" style="display: none;">
+              <div class="pagination-info">
+                Mostrando <span id="usuarios-showing-start">0</span> - <span id="usuarios-showing-end">0</span> de <span id="usuarios-total">0</span> usuarios
+              </div>
+              <div class="pagination-controls">
+                <button class="pagination-btn" id="usuarios-prev" disabled>
+                  <i class="bi bi-chevron-left"></i> Anterior
+                </button>
+                <span class="pagination-pages">
+                  Página <span id="usuarios-current-page">1</span> de <span id="usuarios-total-pages">1</span>
+                </span>
+                <button class="pagination-btn" id="usuarios-next" disabled>
+                  Siguiente <i class="bi bi-chevron-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONFIGURACION VIEW -->
+        <div id="view-configuracion" style="display: none;">
+          <div class="empty-state">
+            <i class="bi bi-gear"></i>
+            <h3>Configuración</h3>
+            <p>Próximamente</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL PRODUCTO -->
+  <div id="modal-producto" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-product-title">Añadir Nuevo Producto</h3>
+        <button class="close-btn" id="close-modal-product">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="productform-container"></div>
+      </div>
     </div>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../../js/menuAdmin.js"></script>
-    <script src="../../js/products.js"></script>
-    <script src="../../js/main.js"></script>
+  <!-- MODAL USUARIO -->
+  <div id="modal-usuario" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-user-title">Añadir Nuevo Usuario</h3>
+        <button class="close-btn" id="close-modal-user">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="user-form">
+          <div class="form-group">
+            <label>Nombre Completo</label>
+            <input type="text" id="user-nombre" required placeholder="Ingresa el nombre">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="user-email" required placeholder="Ingresa el email">
+          </div>
+          <div class="form-group">
+            <label>Contraseña <span id="password-hint">(dejar vacío para mantener actual)</span></label>
+            <input type="password" id="user-password" placeholder="Ingresa la contraseña">
+          </div>
+          <div class="form-group">
+            <label>Rol</label>
+            <select id="user-rol">
+              <option value="CLIENT">Cliente</option>
+              <option value="ADMIN">Administrador</option>
+            </select>
+          </div>
+          <div class="form-group" id="estado-group" style="display: none;">
+            <label>Estado</label>
+            <select id="user-estado">
+              <option value="activo">Activo</option>
+              <option value="inactivo">Inactivo</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-cafe-admin" style="width: 100%; margin-top: 20px;">
+            <i class="bi bi-check-circle"></i> <span id="user-submit-text">Guardar Usuario</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DETALLES DE ORDEN -->
+  <div id="modal-orden" class="modal-overlay">
+    <div class="modal-content" style="max-width: 700px;">
+      <div class="modal-header">
+        <h3>Detalles de Orden #<span id="orden-id"></span></h3>
+        <button class="close-btn" id="close-modal-orden">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="order-details" id="orden-details">
+          <!-- Se llena dinámicamente -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/admin.js"></script>
+  <script src="/js/products.js"></script>
 </body>
-
 </html>

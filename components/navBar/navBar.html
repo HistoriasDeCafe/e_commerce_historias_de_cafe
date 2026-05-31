@@ -1,76 +1,58 @@
 <div class="nav-container-full">
-
     <!-- Franja -->
     <div class="label-tag-full">
         ¡ Conoce historias de Café, desde la cosecha hasta la taza caliente en la mañana!
     </div>
 
-    <!-- Animación -->
-    <div id="coffecup-transition">
-        <div class="coffee-stain"></div>
-        <div class="coffecup">
-            <img src="../../assets/img/cafe_animation.png" class="coffecup-img">
-        </div>
-    </div>
-
     <nav class="navbar navbar-expand-lg nav-custom-full">
-
         <!-- Logo -->
-        <a class="navbar-brand brand-container" href="../../pages/home/home.html">
-            <img src="../../assets/img/logo-light.svg" class="nav-logo">
-            <div class="brand-text">
-                <!-- //<span class="brand-title">Historias de Café</span>//  -->
-
-            </div>
+        <a class="navbar-brand brand-container" href="/pages/home/home.html">
+            <img src="/assets/img/logo-light.svg" class="nav-logo">
         </a>
 
         <!-- Botón hamburguesa -->
-        <button class="navbar-toggler hamburger-btn" type="button" data-bs-toggle="collapse"
-            data-bs-target="#navbarMenu">
-
+        <button class="navbar-toggler hamburger-btn" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
             <span class="hamburger-line"></span>
             <span class="hamburger-line"></span>
             <span class="hamburger-line"></span>
-
         </button>
 
         <!-- Contenido -->
         <div class="collapse navbar-collapse" id="navbarMenu">
-
             <!-- Links -->
-            <div class="navbar-nav mx-auto">
-                <a class="nav-link link3 opcionesBarra" href="../../pages/home/home.html">Inicio</a>
-                <a class="nav-link link3 opcionesBarra" href="../../pages/catalogo/catalogo.html">Catálogo</a>
-                <!-- <a class="nav-link link3" href="#">Origen</a> -->
-                <a class="nav-link link3 opcionesBarra"
-                    href="../../pages/acercaDeNosotros/acerca_de_nosotros.html">Nosotros</a>
-                <a class="nav-link link3 opcionesBarra" href="../../pages/contactanosParts/contactanos.html">Contacto</a>
+            <div class="navbar-nav">
+                <a class="nav-link link3 opcionesBarra" href="/pages/home/home.html">Inicio</a>
+                <a class="nav-link link3 opcionesBarra" href="/pages/catalogo/catalogo.html">Catálogo</a>
+                <a class="nav-link link3 opcionesBarra" href="/pages/acercaDeNosotros/acerca_de_nosotros.html">Nosotros</a>
+                <a class="nav-link link3 opcionesBarra" href="/pages/contactanosParts/contactanos.html">Contacto</a>
+                <a class="nav-link link3 opcionesBarra admin-link" id="admin-link" href="/pages/admin/admin.html" style="display: none;">Admin Dashboard</a>
             </div>
 
             <!-- Acciones -->
             <div class="nav-actions">
-
                 <!-- Carrito -->
                 <button class="icon-btn3" onclick="toggleCarrito()">
-                    <img src ="../../assets/icons/carritoCafe2.svg" alt="carrito de compras" class="carrito-icon" >
+                    <img src="/assets/icons/carritoCafe2.svg" alt="carrito de compras" class="carrito-icon">
                     <div id="conteo-productos-nav" class="badge-dot3">0</div>
                 </button>
 
-        <div class="user-auth-wrapper">
+                <div class="user-auth-wrapper">
+                    <div class="user-avatar-section">
+                        <div class="avatar-circle">
+                            <img src="/assets/icons/user.svg" alt="usuario" class="usuario-icon-nav">
+                        </div>
+                        <div id="user-info" class="user-info" style="display: none;">
+                            <span class="user-greeting">Hola,</span>
+                            <span id="user-name" class="user-name">Usuario</span>
+                        </div>
+                    </div>
 
-          <img src="../../assets/icons/user.svg" alt="usuario" class="usuario-icon-nav">
-        
-   
-          <div id="user-status-content" class="user-status-content">
-
-         </div>
-        
-
-         <button id="nav-auth-btn" class="cta-primary">Iniciar Sesión</button>
-        </div>
-
+                    <button id="nav-auth-btn" class="auth-btn login-btn">
+                        <i class="bi bi-person"></i>
+                        Iniciar Sesión
+                    </button>
+                </div>
             </div>
-
         </div>
     </nav>
 </div>

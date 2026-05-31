@@ -1,79 +1,49 @@
 const sidebarUrl = (typeof BASE_URL !== 'undefined' ? BASE_URL : '../../') + 'components/menuAdmin/menuAdmin.html';
 
+// Cargar sidebar y luego inicializar todo
 fetch(sidebarUrl)
   .then(response => response.text())
   .then(html => {
     const container = document.getElementById('sidebar-container');
     if (container) {
       container.innerHTML = html;
-      activarMenu();
+      inicializarMenuAdmin();
     }
   })
   .catch(err => console.error('Error cargando sidebar:', err));
 
 
-function activarMenu() {
-  const items = document.querySelectorAll('.sidebar nav ul li');
-
-  items.forEach(item => {
-    item.addEventListener('click', () => {
-      items.forEach(i => i.classList.remove('active'));
-      item.classList.add('active');
-
-      const view = item.getAttribute('data-view');
-      const headerTitle = document.querySelector('.main-content h1');
-      if (headerTitle) headerTitle.textContent = view;
-    });
-  });
-}
-
-
-document.addEventListener("DOMContentLoaded", () => {
+function inicializarMenuAdmin() {
     const menuItems = document.querySelectorAll(".sidebar ul li");
     const title = document.querySelector(".top-bar span");
     const mainContent = document.querySelector(".content-padding");
-    
-    // Capturamos el modal globalmente en este archivo
+    const sidebar = document.querySelector(".sidebar");
+    const topBar = document.querySelector(".top-bar");
     const modalProducto = document.getElementById("modal-producto");
+
+    if (!mainContent || !sidebar || !topBar) return;
 
     // --- FUNCIÓN COMPARTIDA PARA ABRIR EL MODAL ---
     const abrirModal = () => {
         if (modalProducto) {
-            // Si usas el JS de Bootstrap, lo abrimos con su API
-            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                const modalInstance = bootstrap.Modal.getOrCreateInstance(modalProducto);
-                modalInstance.show();
-            } else {
-                // Si solo usas CSS personalizado para el modal
-                modalProducto.style.display = "flex";
-            }
+            modalProducto.style.display = "flex";
         }
     };
 
     // --- FUNCIÓN COMPARTIDA PARA CERRAR EL MODAL ---
     const cerrarModal = () => {
         if (modalProducto) {
-            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                const modalInstance = bootstrap.Modal.getInstance(modalProducto);
-                if (modalInstance) modalInstance.hide();
-            } else {
-                modalProducto.style.display = "none";
-            }
+            modalProducto.style.display = "none";
         }
     };
 
-    // ================================================================
-    // SOLUCIÓN AL BOTÓN ESTÁTICO: Escuchamos al botón que ya viene en el HTML
-    // ================================================================
+    // Botón estático para añadir productos
     const btnAddEstatico = document.querySelector(".btn-add");
     if (btnAddEstatico) {
         btnAddEstatico.addEventListener("click", async (e) => {
             e.preventDefault();
-            
-            // Abrir el modal
             abrirModal();
 
-            // Cargar el formulario HTML dinámicamente
             try {
                 const formUrl = (typeof BASE_URL !== 'undefined' ? BASE_URL : '../../') + 'components/product/productForm.html';
                 const respuesta = await fetch(formUrl);
@@ -83,8 +53,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 const container = document.getElementById("productform-container");
                 if (container) {
                     container.innerHTML = htmlFormulario;
-                    
-                    // Inicializar la lógica del formulario después de cargar el HTML
                     if (typeof initProductLogic === 'function') {
                         initProductLogic();
                     }
@@ -101,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Escuchamos a la 'X' para cerrar el modal (usando event delegation)
+    // Cerrar modal con la X
     document.addEventListener("click", (e) => {
         if (e.target.classList.contains("close-btn") || e.target.closest(".close-btn")) {
             cerrarModal();
@@ -119,6 +87,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     menuItems.forEach(item => {
         item.addEventListener("click", () => {
+            const link = item.querySelector("a");
+            if (link) return; // Si tiene un enlace, dejar que navegue normalmente
 
             menuItems.forEach(i => i.classList.remove("active"));
             item.classList.add("active");
@@ -127,59 +97,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (view === "Salir") {
                 localStorage.removeItem("usuarioActivo");
-                localStorage.removeItem("authToken"); 
+                localStorage.removeItem("authToken");
                 window.location.href = "../../pages/home/home.html";
                 return;
             }
 
-            // Animación tipo SPA
-            if (mainContent) {
-                mainContent.classList.add("fade-out");
+            mainContent.classList.add("fade-out");
+
+            setTimeout(() => {
+                if (title) title.textContent = view;
+                mainContent.innerHTML = views[view] || "<h2>Vista</h2>";
+
+                if (view === "Productos") {
+                    const btnOpenDinamico = document.getElementById("openModal");
+                    if (btnOpenDinamico) {
+                        btnOpenDinamico.onclick = abrirModal;
+                    }
+                    if (typeof initProductLogic === 'function') {
+                        initProductLogic();
+                    }
+                }
+
+                mainContent.classList.remove("fade-out");
+                mainContent.classList.add("fade-in");
 
                 setTimeout(() => {
-                    if (title) title.textContent = view;
-                    
-                    // 1. Inyectamos el HTML de la vista
-                    mainContent.innerHTML = views[view] || "<h2>Vista</h2>";
-
-                    // 2. Si es la vista de Productos, escuchamos al botón DINÁMICO
-                    if (view === "Productos") {
-                        const btnOpenDinamico = document.getElementById("openModal");
-                        if (btnOpenDinamico) {
-                            btnOpenDinamico.onclick = abrirModal; 
-                        }
-                        
-                        // Inicializamos tu lógica de validación y envío de products.js
-                        if (typeof initProductLogic === 'function') {
-                            initProductLogic();
-                        }
-                    }
-
-                    mainContent.classList.remove("fade-out");
-                    mainContent.classList.add("fade-in");
-
-                    setTimeout(() => {
-                        mainContent.classList.remove("fade-in");
-                    }, 300);
-
-                }, 200);
-            }
+                    mainContent.classList.remove("fade-in");
+                }, 300);
+            }, 200);
         });
     });
 
     // Toggle sidebar
-    const topBar = document.querySelector(".top-bar");
-    const sidebar = document.querySelector(".sidebar");
+    const toggleBtn = document.createElement("button");
+    toggleBtn.innerHTML = "<i class='bi bi-list'></i>";
+    toggleBtn.classList.add("toggle-btn");
+    topBar.prepend(toggleBtn);
 
-    if (topBar && sidebar) {
-        const toggleBtn = document.createElement("button");
-        toggleBtn.innerHTML = "<i class='bi bi-list'></i>";
-        toggleBtn.classList.add("toggle-btn");
-
-        topBar.prepend(toggleBtn);
-
-        toggleBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("collapsed");
-        });
-    }
-});
+    toggleBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("collapsed");
+    });
+}
