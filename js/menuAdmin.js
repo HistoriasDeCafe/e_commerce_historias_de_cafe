@@ -121,12 +121,33 @@ function inicializarMenuAdmin() {
     });
 
     // Toggle sidebar
-    const toggleBtn = document.createElement("button");
-    toggleBtn.innerHTML = "<i class='bi bi-list'></i>";
-    toggleBtn.classList.add("toggle-btn");
-    topBar.prepend(toggleBtn);
-
-    toggleBtn.addEventListener("click", () => {
-        sidebar.classList.toggle("collapsed");
+    const toggleBtn = document.querySelector(".toggle-btn");
+    
+    // Create overlay
+    const overlay = document.createElement("div");
+    overlay.classList.add("sidebar-overlay");
+    document.body.appendChild(overlay);
+    
+    if (toggleBtn) {
+        toggleBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("active");
+            overlay.classList.toggle("active");
+        });
+    }
+    
+    // Close sidebar when clicking overlay
+    overlay.addEventListener("click", () => {
+        sidebar.classList.remove("active");
+        overlay.classList.remove("active");
+    });
+    
+    // Close sidebar when clicking a menu item on mobile
+    menuItems.forEach(item => {
+        item.addEventListener("click", () => {
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove("active");
+                overlay.classList.remove("active");
+            }
+        });
     });
 }

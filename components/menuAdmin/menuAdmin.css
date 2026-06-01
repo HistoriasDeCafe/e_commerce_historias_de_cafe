@@ -92,36 +92,68 @@ nav ul li:hover i {
 /* Responsive */
 @media (max-width: 768px) {
   .sidebar {
-    width: 80px;
-    padding: 20px 12px;
+    position: fixed;
+    left: -260px;
+    width: 260px;
+    padding: 25px 20px;
+    z-index: 1000;
+    transition: left 0.3s ease;
+  }
+  
+  .sidebar.active {
+    left: 0;
   }
   
   .logo-section {
-    padding: 1.5rem 0.5rem;
-    border-radius: 8px;
+    padding: 2rem 1rem;
+    border-radius: 12px;
   }
   
   .logo-section img {
-    width: 55px;
-    height: 55px;
+    width: 160px;
+    height: 160px;
   }
   
   .logo-section span {
-    display: none;
+    display: block;
   }
   
   nav ul li span {
-    display: none;
+    display: inline;
   }
   
   nav ul li {
-    justify-content: center;
-    padding: 14px 10px;
-    gap: 0;
+    justify-content: flex-start;
+    padding: 14px 18px;
+    gap: 1rem;
   }
   
   nav ul li i {
-    font-size: 1.4rem;
-    width: auto;
+    font-size: 1.25rem;
+    width: 28px;
+  }
+  
+  .main-content {
+    margin-left: 0;
+  }
+  
+  .dashboard-container {
+    flex-direction: column;
+  }
+  
+  /* Overlay when sidebar is open */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+  
+  .sidebar-overlay.active {
+    display: block;
   }
 }
