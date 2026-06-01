@@ -1,6 +1,6 @@
 const API_URL_PRODUCTS = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
   ? "http://localhost:8080/products"
-  : "https://e-commerce-historias-de-cafe-backend-3c6t.onrender.com.onrender.com/products";
+  : "https://e-commerce-historias-de-cafe-backend-3c6t.onrender.com/products";
 
 let productosBackend = [];
 let loading = false;

@@ -314,7 +314,7 @@ function initCart() {
 
       const API_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
         ? "http://localhost:8080"
-        : "https://e-commerce-historias-de-cafe-backend-3c6t.onrender.com.onrender.com";
+        : "https://e-commerce-historias-de-cafe-backend-3c6t.onrender.com";
 
       const authHeaders = {
         'Content-Type': 'application/json',

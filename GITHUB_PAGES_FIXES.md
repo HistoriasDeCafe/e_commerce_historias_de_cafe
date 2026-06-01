@@ -116,7 +116,7 @@ WHERE email = 'zullytamayom@gmail.com';
 ```bash
 # Obtén el token de GitHub Pages
 # Luego:
-curl -X GET "https://e-commerce-historias-de-cafe-backend-3c6t.onrender.com-3c6t.onrender.com-3c6t.onrender.com.onrender.com/products" \
+curl -X GET "https://e-commerce-historias-de-cafe-backend-3c6t.onrender.com/products" \
   -H "Authorization: Bearer <TOKEN_AQUI>" \
   -H "Content-Type: application/json"
 ```
@@ -217,7 +217,7 @@ public class CorsConfig {
 
 - **GitHub Pages Repo**: https://github.com/historiasdecafe/e_commerce_historias_de_cafe
 - **Admin Page**: https://historiasdecafe.github.io/e_commerce_historias_de_cafe/pages/admin/admin.html
-- **Backend API**: https://e-commerce-historias-de-cafe-backend-3c6t.onrender.com.onrender.com
+- **Backend API**: https://e-commerce-historias-de-cafe-backend-3c6t.onrender.com
 - **Documentación CORS**: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
 
 ---

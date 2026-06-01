@@ -7,27 +7,11 @@ let existingImageUrl = '';
 // Base URL de tu API de productos (detecta si estás en local o producción)
 const API_URL_PRODUCTS = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
   ? "http://localhost:8080/products"
-  : "https://e-commerce-historias-de-cafe-backend.onrender.com/products";
-
-// Helper: decode JWT payload for debugging
-function decodeJwt(token) {
-  if (!token) return null;
-  try {
-    const payload = token.split('.')[1];
-    const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
-    return JSON.parse(json);
-  } catch (e) {
-    console.warn('decodeJwt failed:', e);
-    return null;
-  }
-}
+  : "https://e-commerce-historias-de-cafe-backend-3c6t.onrender.com/products";
 
 function obtenerHeadersAutenticados() {
   const token = localStorage.getItem("authToken");
-  const headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json"
-  };
+  const headers = { "Content-Type": "application/json" };
 
   if (token) {
     headers.Authorization = `Bearer ${token}`;
@@ -181,6 +165,7 @@ function initProductLogic() {
         if (btnSubmit) btnSubmit.textContent = "Guardando producto en base de datos...";
 
         const productoPayload = {
+          id: productIdToEdit,
           name: nombreInput.value.trim(),
           origin: origenInput ? origenInput.value.trim() : "",
           roast: tostadoInput ? tostadoInput.value : "",
@@ -190,10 +175,6 @@ function initProductLogic() {
           categoryId: Number(regionInput.value),
           image: imageUrl
         };
-
-        if (isEditMode) {
-          productoPayload.id = productIdToEdit;
-        }
 
         console.log("Enviando payload al backend:", productoPayload);
 
@@ -210,13 +191,12 @@ function initProductLogic() {
         const method = isEditMode ? "PUT" : "POST";
         const url = isEditMode ? `${API_URL_PRODUCTS}/${productIdToEdit}` : API_URL_PRODUCTS;
 
-        const headers = obtenerHeadersAutenticados();
-        console.log(`Making ${method} request to:`, url, 'headers:', headers);
+        console.log(`Making ${method} request to:`, url);
 
         // FASE C: Petición POST/PUT al Controlador de Spring Boot
         const response = await fetch(url, {
           method: method,
-          headers: headers,
+          headers: obtenerHeadersAutenticados(),
           body: JSON.stringify(productoPayload)
         });
 
@@ -481,8 +461,6 @@ function actualizarTabla() {
 async function cargarProductosDesdeBackend() {
   try {
     console.log("Cargando productos desde:", API_URL_PRODUCTS);
-    const tokenDebug = localStorage.getItem('authToken');
-    console.log('[debug] authToken present:', !!tokenDebug, 'decoded:', decodeJwt(tokenDebug));
     const response = await fetch(API_URL_PRODUCTS, {
       headers: obtenerHeadersAutenticados()
     });
