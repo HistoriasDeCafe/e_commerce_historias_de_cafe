@@ -15,6 +15,14 @@ function obtenerHeadersAutenticados() {
 
   if (token) {
     headers.Authorization = `Bearer ${token}`;
+    try {
+      // Mostrar presencia del token y una máscara para debugging
+      console.log('[auth] authToken presente:', true, 'tokenMask:', token.substring(0, 8) + '...');
+    } catch (e) {
+      console.log('[auth] authToken presente: true');
+    }
+  } else {
+    console.warn('[auth] authToken ausente en localStorage');
   }
 
   return headers;
@@ -169,6 +177,15 @@ function initProductLogic() {
         };
 
         console.log("Enviando payload al backend:", productoPayload);
+
+        // Debug autenticación: verificar token y usuario antes de enviar
+        try {
+          const tokenDebug = localStorage.getItem('authToken');
+          const usuarioDebug = (() => { try { return JSON.parse(localStorage.getItem('usuarioActivo')); } catch(e) { return null; } })();
+          console.log('[auth] antes de petición - tokenPresente:', !!tokenDebug, 'usuario:', usuarioDebug ? { email: usuarioDebug.email, role: usuarioDebug.role } : null);
+        } catch (e) {
+          console.warn('[auth] no se pudo leer localStorage para debug');
+        }
 
         // Determinar método HTTP según modo
         const method = isEditMode ? "PUT" : "POST";
