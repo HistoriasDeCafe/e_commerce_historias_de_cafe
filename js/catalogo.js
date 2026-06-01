@@ -25,7 +25,7 @@ async function cargarProductosBackend() {
       origen: prod.origin || prod.categoryName || "Región Origen",
       descripcion: prod.description || "Sin descripción disponible.",
       precio: prod.price || 0,
-      imagen: prod.imagen || '/assets/img/iconoPepitaCafe-dark.svg'
+      image: prod.image || '/assets/img/iconoPepitaCafe-dark.svg'
     }));
     
     console.log('Productos cargados:', productosBackend);
@@ -83,7 +83,7 @@ function renderizarCatalogo() {
     const cardHTML = `
       <article class="card" data-product-id="${product.id}">
         <div class="image-placeholder">
-          <img src="${product.imagen}" alt="${product.nombre}" onerror="this.src='${window.BASE_URL || ''}assets/img/iconoPepitaCafe-dark.svg'">
+          <img src="${product.imagen}" alt="${product.nombre}" onerror="this.src='/assets/img/iconoPepitaCafe-dark.svg'">
         </div>
         <div class="card-content">
           <h3 class="product-name">${product.nombre}</h3>

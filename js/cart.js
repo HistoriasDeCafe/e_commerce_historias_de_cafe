@@ -59,7 +59,7 @@ function initCart() {
   // 5. AGREGAR AL CARRITO
   // =========================================================
   function agregarAlCarrito(producto) {
-    const { id, nombre, precio, imagen } = producto;
+    const { id, nombre, precio, imagenn } = producto;
     
     const itemExistente = items.find(item => item.nombre === nombre);
 
@@ -70,7 +70,7 @@ function initCart() {
         id: id,
         nombre: nombre,
         precio: precio,
-        imagen: imagen,
+        imagenn: imagnen,
         cantidad: 1
       });
     }
@@ -116,7 +116,7 @@ function initCart() {
       div.innerHTML = `
         <div class="prod-info">
           <div class="prod-img-placeholder">
-            <img src="${item.imagen}" alt="${item.nombre}" onerror="this.src='${window.BASE_URL || ''}assets/img/iconoPepitaCafe-dark.svg'">
+            <img src="${item.imagen}" alt="${item.nombre}" onerror="this.src='/assets/img/iconoPepitaCafe-dark.svg'">
           </div>
           <div class="prod-detalles">
             <p class="prod-nombre">${item.nombre}</p>
@@ -468,13 +468,13 @@ function initCart() {
         const descripcion = card.querySelector('.product-description')?.textContent.trim();
         const precioTexto = card.querySelector('.product-price')?.textContent.replace('$', '').replace(/\./g, '').trim();
         const precio = parseFloat(precioTexto);
-        const imagen = card.querySelector('img')?.src || '/assets/img/iconoPepitaCafe-dark.svg';
+        const image = card.querySelector('img')?.src || '/assets/img/iconoPepitaCafe-dark.svg';
 
         agregarAlCarrito({
           id: productId,
           nombre: nombre,
           precio: precio,
-          imagen: imagen
+          image: image
         });
       });
     });
