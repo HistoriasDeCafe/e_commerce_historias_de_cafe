@@ -34,7 +34,7 @@ async function diagnosticarAPI() {
   // 2. Probar conexión a API
   console.log('\n%c2. TESTEO DE CONEXIÓN A API', 'color: green; font-weight: bold;');
   
-  const API_URL = 'https://e-commerce-historias-de-cafe-backend.onrender.com';
+  const API_URL = 'https://e-commerce-historias-de-cafe-backend-3c6t.onrender.com';
   
   if (!token) {
     console.log('%c⚠️ No hay token, saltando test de API', 'color: orange;');
@@ -90,7 +90,7 @@ async function diagnosticarAPI() {
   // 4. Comando CURL para backend team
   console.log('\n%c4. COMANDO CURL PARA BACKEND TEAM', 'color: green; font-weight: bold;');
   console.log('Usa este comando para probar desde terminal:');
-  console.log(`\ncurl -X GET "https://e-commerce-historias-de-cafe-backend.onrender.com/products" \\`);
+  console.log(`\ncurl -X GET "https://e-commerce-historias-de-cafe-backend-3c6t.onrender.com/products" \\`);
   console.log(`  -H "Authorization: Bearer ${token}" \\`);
   console.log(`  -H "Content-Type: application/json"`);
 }
