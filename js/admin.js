@@ -719,7 +719,8 @@ function deleteProduct(id) {
 // Load product form into modal
 async function loadProductForm() {
   try {
-    const response = await fetch('/components/product/productForm.html');
+    const baseUrl = window.BASE_URL || '';
+    const response = await fetch(baseUrl + 'components/product/productForm.html');
     if (!response.ok) throw new Error("No se pudo cargar el formulario");
 
     const htmlFormulario = await response.text();
