@@ -1,7 +1,7 @@
 // Admin Dashboard JavaScript
 // State
 let activeView = 'Dashboard';
-let listaProductos = [];
+let adminProductos = [];
 let listaUsuarios = [];
 let listaOrdenes = [];
 let currentPageProductos = 1;
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load data
   console.log('Starting to load products...');
   await loadProductos();
-  console.log('Products loaded, listaProductos:', listaProductos);
+  console.log('Products loaded, adminProductos:', adminProductos);
   
   await loadUsuarios();
   await loadOrdenes();
@@ -176,7 +176,7 @@ async function loadProductos() {
       const products = await response.json();
       console.log('Raw products from API:', products);
       
-      listaProductos = products.map(p => ({
+      adminProductos = products.map(p => ({
         id: p.idProduct || p.id_product || p.id,
         nombre: p.name || 'Sin nombre',
         origen: p.origin || '',
@@ -189,7 +189,7 @@ async function loadProductos() {
         estado: 'activo'
       }));
       
-      console.log('Mapped listaProductos:', listaProductos);
+      console.log('Mapped adminProductos:', adminProductos);
     } else {
       console.error('Failed to load products. Status:', response.status);
       const errorText = await response.text();
@@ -261,7 +261,7 @@ function updateDashboardStats() {
   const totalVentas = listaOrdenes.reduce((sum, orden) => sum + (orden.total || 0), 0);
   const totalOrdenes = listaOrdenes.length;
   const totalUsuarios = listaUsuarios.length;
-  const totalStockBajo = listaProductos.filter(p => p.stock < 5).length;
+  const totalStockBajo = adminProductos.filter(p => p.stock < 5).length;
 
   document.getElementById('total-ventas').textContent = `$${totalVentas.toLocaleString()}`;
   document.getElementById('total-ordenes').textContent = totalOrdenes;
@@ -275,7 +275,7 @@ function updateDashboardStats() {
 // Update featured products widget
 function updateFeaturedProducts() {
   const featuredContainer = document.getElementById('featured-products');
-  const featuredProducts = listaProductos
+  const featuredProducts = adminProductos
     .filter(p => p.estado === 'activo')
     .sort((a, b) => a.stock - b.stock)
     .slice(0, 3);
@@ -298,8 +298,8 @@ function updateFeaturedProducts() {
 // Render products table
 function renderProductosTable() {
   console.log('renderProductosTable called');
-  console.log('listaProductos:', listaProductos);
-  console.log('listaProductos.length:', listaProductos.length);
+  console.log('adminProductos:', adminProductos);
+  console.log('adminProductos.length:', adminProductos.length);
   
   const tbody = document.getElementById('productos-table-body');
   const emptyState = document.getElementById('productos-empty-state');
@@ -314,9 +314,9 @@ function renderProductosTable() {
     return;
   }
 
-  document.getElementById('productos-count').textContent = listaProductos.length;
+  document.getElementById('productos-count').textContent = adminProductos.length;
 
-  if (listaProductos.length === 0) {
+  if (adminProductos.length === 0) {
     console.log('No products to display, showing empty state');
     tbody.innerHTML = '';
     emptyState.style.display = 'block';
@@ -324,14 +324,14 @@ function renderProductosTable() {
     return;
   }
 
-  console.log('Rendering', listaProductos.length, 'products');
+  console.log('Rendering', adminProductos.length, 'products');
   emptyState.style.display = 'none';
   pagination.style.display = 'flex';
 
-  const totalPages = Math.ceil(listaProductos.length / itemsPerPage);
+  const totalPages = Math.ceil(adminProductos.length / itemsPerPage);
   const start = (currentPageProductos - 1) * itemsPerPage;
   const end = start + itemsPerPage;
-  const paginated = listaProductos.slice(start, end);
+  const paginated = adminProductos.slice(start, end);
 
   console.log('Paginated products:', paginated);
 
@@ -370,8 +370,8 @@ function renderProductosTable() {
 
   // Update pagination info
   document.getElementById('productos-showing-start').textContent = start + 1;
-  document.getElementById('productos-showing-end').textContent = Math.min(end, listaProductos.length);
-  document.getElementById('productos-total').textContent = listaProductos.length;
+  document.getElementById('productos-showing-end').textContent = Math.min(end, adminProductos.length);
+  document.getElementById('productos-total').textContent = adminProductos.length;
   document.getElementById('productos-current-page').textContent = currentPageProductos;
   document.getElementById('productos-total-pages').textContent = totalPages;
 
@@ -540,7 +540,7 @@ function initializeEventListeners() {
   });
 
   document.getElementById('productos-next').addEventListener('click', () => {
-    const totalPages = Math.ceil(listaProductos.length / itemsPerPage);
+    const totalPages = Math.ceil(adminProductos.length / itemsPerPage);
     if (currentPageProductos < totalPages) {
       currentPageProductos++;
       renderProductosTable();
@@ -642,7 +642,7 @@ function closeOrderModal() {
 
 // Product operations
 function editProduct(id) {
-  const product = listaProductos.find(p => p.id === id);
+  const product = adminProductos.find(p => p.id === id);
   if (!product) {
     Swal.fire({
       icon: 'error',
@@ -669,7 +669,7 @@ function editProduct(id) {
 }
 
 function deleteProduct(id) {
-  const product = listaProductos.find(p => p.id === id);
+  const product = adminProductos.find(p => p.id === id);
   if (!product) return;
 
   Swal.fire({
