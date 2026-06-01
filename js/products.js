@@ -24,7 +24,10 @@ function decodeJwt(token) {
 
 function obtenerHeadersAutenticados() {
   const token = localStorage.getItem("authToken");
-  const headers = { "Content-Type": "application/json" };
+  const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  };
 
   if (token) {
     headers.Authorization = `Bearer ${token}`;
@@ -178,7 +181,6 @@ function initProductLogic() {
         if (btnSubmit) btnSubmit.textContent = "Guardando producto en base de datos...";
 
         const productoPayload = {
-          id: productIdToEdit,
           name: nombreInput.value.trim(),
           origin: origenInput ? origenInput.value.trim() : "",
           roast: tostadoInput ? tostadoInput.value : "",
@@ -188,6 +190,10 @@ function initProductLogic() {
           categoryId: Number(regionInput.value),
           image: imageUrl
         };
+
+        if (isEditMode) {
+          productoPayload.id = productIdToEdit;
+        }
 
         console.log("Enviando payload al backend:", productoPayload);
 
@@ -204,12 +210,13 @@ function initProductLogic() {
         const method = isEditMode ? "PUT" : "POST";
         const url = isEditMode ? `${API_URL_PRODUCTS}/${productIdToEdit}` : API_URL_PRODUCTS;
 
-        console.log(`Making ${method} request to:`, url);
+        const headers = obtenerHeadersAutenticados();
+        console.log(`Making ${method} request to:`, url, 'headers:', headers);
 
         // FASE C: Petición POST/PUT al Controlador de Spring Boot
         const response = await fetch(url, {
           method: method,
-          headers: obtenerHeadersAutenticados(),
+          headers: headers,
           body: JSON.stringify(productoPayload)
         });
 
