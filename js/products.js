@@ -9,6 +9,19 @@ const API_URL_PRODUCTS = (window.location.hostname === "localhost" || window.loc
   ? "http://localhost:8080/products"
   : "https://e-commerce-historias-de-cafe-backend.onrender.com/products";
 
+// Helper: decode JWT payload for debugging
+function decodeJwt(token) {
+  if (!token) return null;
+  try {
+    const payload = token.split('.')[1];
+    const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+    return JSON.parse(json);
+  } catch (e) {
+    console.warn('decodeJwt failed:', e);
+    return null;
+  }
+}
+
 function obtenerHeadersAutenticados() {
   const token = localStorage.getItem("authToken");
   const headers = { "Content-Type": "application/json" };
@@ -461,6 +474,8 @@ function actualizarTabla() {
 async function cargarProductosDesdeBackend() {
   try {
     console.log("Cargando productos desde:", API_URL_PRODUCTS);
+    const tokenDebug = localStorage.getItem('authToken');
+    console.log('[debug] authToken present:', !!tokenDebug, 'decoded:', decodeJwt(tokenDebug));
     const response = await fetch(API_URL_PRODUCTS, {
       headers: obtenerHeadersAutenticados()
     });

@@ -14,6 +14,19 @@ const API_URL = (window.location.hostname === 'localhost' || window.location.hos
   ? 'http://localhost:8080'
   : 'https://e-commerce-historias-de-cafe-backend.onrender.com';
 
+// Helper: decode JWT payload for debugging
+function decodeJwt(token) {
+  if (!token) return null;
+  try {
+    const payload = token.split('.')[1];
+    const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+    return JSON.parse(json);
+  } catch (e) {
+    console.warn('decodeJwt failed:', e);
+    return null;
+  }
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('Admin page DOMContentLoaded');
@@ -161,6 +174,7 @@ async function loadProductos() {
     const token = localStorage.getItem('authToken');
     console.log('Loading products from:', `${API_URL}/products`);
     console.log('Token:', token ? 'Present' : 'Missing');
+    console.log('[debug] decoded token:', decodeJwt(token));
     
     const response = await fetch(`${API_URL}/products`, {
       method: 'GET',
@@ -204,6 +218,7 @@ async function loadProductos() {
 async function loadUsuarios() {
   try {
     const token = localStorage.getItem('authToken');
+    console.log('[debug] decoded token (users):', decodeJwt(token));
     const response = await fetch(`${API_URL}/users`, {
       method: 'GET',
       headers: {
@@ -231,6 +246,7 @@ async function loadUsuarios() {
 async function loadOrdenes() {
   try {
     const token = localStorage.getItem('authToken');
+    console.log('[debug] decoded token (orders):', decodeJwt(token));
     const response = await fetch(`${API_URL}/orders`, {
       method: 'GET',
       headers: {
