@@ -245,7 +245,6 @@ document.addEventListener("DOMContentLoaded", () => {
     (typeof initCart === 'function') ? initCart : () => console.warn("initCart no definida")
   );
 
-  loadComponent("productform-container", "components/product/productForm.html",
-    (typeof initProductLogic === 'function') ? initProductLogic : () => console.warn("producto no definido")
-  );
+  // productForm se carga dinámicamente desde admin.js cuando se necesita
+  // No se carga aquí para evitar intentos fallidos en páginas que no lo necesitan
 });

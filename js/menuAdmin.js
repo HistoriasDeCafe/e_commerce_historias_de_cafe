@@ -45,17 +45,9 @@ function inicializarMenuAdmin() {
             abrirModal();
 
             try {
-                const formUrl = (typeof BASE_URL !== 'undefined' ? BASE_URL : '../../') + 'components/product/productForm.html';
-                const respuesta = await fetch(formUrl);
-                if (!respuesta.ok) throw new Error("No se pudo cargar el formulario");
-
-                const htmlFormulario = await respuesta.text();
-                const container = document.getElementById("productform-container");
-                if (container) {
-                    container.innerHTML = htmlFormulario;
-                    if (typeof initProductLogic === 'function') {
-                        initProductLogic();
-                    }
+                // Llamar a la función de admin.js que maneja la carga correcta del formulario
+                if (typeof loadProductForm === 'function') {
+                    await loadProductForm();
                 }
             } catch (error) {
                 console.error("Error cargando el form:", error);
