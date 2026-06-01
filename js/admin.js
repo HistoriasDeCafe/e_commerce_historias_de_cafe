@@ -40,7 +40,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       text: 'No puedes acceder al dashboard de administrador.',
       confirmButtonColor: '#532721'
     }).then(() => {
-      window.location.href = '/pages/home/home.html';
+      const baseUrl = window.BASE_URL || '';
+      window.location.href = baseUrl + 'pages/home/home.html';
     });
     return;
   }
@@ -70,7 +71,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Load sidebar component
 async function loadSidebar() {
   try {
-    const response = await fetch('/components/menuAdmin/menuAdmin.html');
+    const baseUrl = window.BASE_URL || '';
+    const response = await fetch(baseUrl + 'components/menuAdmin/menuAdmin.html');
     const html = await response.text();
     document.getElementById('sidebar-container').innerHTML = html;
     initializeSidebar();
@@ -89,14 +91,16 @@ function initializeSidebar() {
       const action = item.dataset.action;
 
       if (action === 'catalog') {
-        window.location.href = '/pages/catalogo/catalogo.html';
+        const baseUrl = window.BASE_URL || '';
+        window.location.href = baseUrl + 'pages/catalogo/catalogo.html';
         return;
       }
 
       if (action === 'logout') {
         localStorage.removeItem('usuarioActivo');
         localStorage.removeItem('authToken');
-        window.location.href = '/pages/users/users.html';
+        const baseUrl = window.BASE_URL || '';
+        window.location.href = baseUrl + 'pages/users/users.html';
         return;
       }
 
