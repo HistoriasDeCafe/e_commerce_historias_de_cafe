@@ -139,6 +139,7 @@ function initProductLogic() {
         btnSubmit.textContent = "Procesando...";
       }
 
+      let isEditModeAtSubmit = false;
       try {
         let imageUrl = existingImageUrl;
         
@@ -190,6 +191,7 @@ function initProductLogic() {
         // Determinar método HTTP según modo
         const method = isEditMode ? "PUT" : "POST";
         const url = isEditMode ? `${API_URL_PRODUCTS}/${productIdToEdit}` : API_URL_PRODUCTS;
+        isEditModeAtSubmit = method === "PUT";
 
         console.log(`Making ${method} request to:`, url);
 
@@ -212,11 +214,9 @@ function initProductLogic() {
           throw new Error(`El backend rechazó los datos (Error ${response.status}). ${errorText}`);
         }
 
-        const wasEditMode = isEditMode;
-
         if (btnSubmit) {
           btnSubmit.disabled = false;
-          btnSubmit.textContent = wasEditMode ? "Actualizar Producto" : "Agregar al Catálogo";
+          btnSubmit.textContent = isEditModeAtSubmit ? "Actualizar Producto" : "Agregar al Catálogo";
         }
 
         // Reset del formulario
@@ -245,8 +245,8 @@ function initProductLogic() {
         Swal.fire({
           icon: "success",
           iconColor: "#532721",
-          title: wasEditMode ? "¡Producto Actualizado!" : "¡Café Registrado!",
-          text: wasEditMode ? "El producto se actualizó exitosamente." : "El producto y su imagen en la nube se guardaron exitosamente.",
+          title: isEditModeAtSubmit ? "¡Producto Actualizado!" : "¡Café Registrado!",
+          text: isEditModeAtSubmit ? "El producto se actualizó exitosamente." : "El producto y su imagen en la nube se guardaron exitosamente.",
           confirmButtonColor: "#B08D57",
           confirmButtonText: "Excelente",
         });
@@ -256,7 +256,7 @@ function initProductLogic() {
         
         if (btnSubmit) {
           btnSubmit.disabled = false;
-          btnSubmit.textContent = isEditMode ? "Actualizar Producto" : "Agregar al Catálogo";
+          btnSubmit.textContent = isEditModeAtSubmit ? "Actualizar Producto" : "Agregar al Catálogo";
         }
 
         Swal.fire({
