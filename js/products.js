@@ -89,6 +89,9 @@ function initProductLogic() {
       descripcion: descInput?.value
     });
 
+    const editModeInput = document.getElementById("edit-mode");
+    const isEditModeOnForm = editModeInput?.value === 'true';
+
     // --- VALIDACIONES ---
     if (!nombreInput || nombreInput.value.trim().length < 3) {
       if (nombreInput) mostrarError(nombreInput, "El nombre del producto es obligatorio (mín. 3 caracteres)");
@@ -107,7 +110,7 @@ function initProductLogic() {
       isValid = false;
     }
     // Solo validar imagen si estamos en modo creación o si se seleccionó una nueva
-    if (!isEditMode && (!imagenInput || !imagenInput.files || !imagenInput.files[0])) {
+    if (!isEditModeOnForm && (!imagenInput || !imagenInput.files || !imagenInput.files[0])) {
       if (imagenInput) mostrarError(imagenInput, "Debes cargar una imagen");
       isValid = false;
     }
@@ -189,8 +192,8 @@ function initProductLogic() {
         }
 
         // Determinar método HTTP según modo
-        const method = isEditMode ? "PUT" : "POST";
-        const url = isEditMode ? `${API_URL_PRODUCTS}/${productIdToEdit}` : API_URL_PRODUCTS;
+        const method = isEditModeOnForm ? "PUT" : "POST";
+        const url = isEditModeOnForm ? `${API_URL_PRODUCTS}/${productIdToEdit}` : API_URL_PRODUCTS;
         isEditModeAtSubmit = method === "PUT";
 
         console.log(`Making ${method} request to:`, url);
@@ -277,6 +280,11 @@ function resetForm() {
     form.reset();
   }
   
+  const editModeInput = document.getElementById("edit-mode");
+  if (editModeInput) {
+    editModeInput.value = 'false';
+  }
+  
   // Clear errors
   document.querySelectorAll(".invalid-feedback").forEach((el) => {
     el.textContent = '';
@@ -312,6 +320,8 @@ function loadProductForEdit(product) {
   
   if (formTitle) formTitle.textContent = "Editar Producto";
   if (btnSubmit) btnSubmit.textContent = "Actualizar Producto";
+  const editModeInput = document.getElementById("edit-mode");
+  if (editModeInput) editModeInput.value = 'true';
   
   // Fill form fields
   const nombreInput = document.getElementById("nombre");
