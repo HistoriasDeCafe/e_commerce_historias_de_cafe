@@ -212,9 +212,11 @@ function initProductLogic() {
           throw new Error(`El backend rechazó los datos (Error ${response.status}). ${errorText}`);
         }
 
+        const wasEditMode = isEditMode;
+
         if (btnSubmit) {
           btnSubmit.disabled = false;
-          btnSubmit.textContent = isEditMode ? "Actualizar Producto" : "Agregar al Catálogo";
+          btnSubmit.textContent = wasEditMode ? "Actualizar Producto" : "Agregar al Catálogo";
         }
 
         // Reset del formulario
@@ -243,8 +245,8 @@ function initProductLogic() {
         Swal.fire({
           icon: "success",
           iconColor: "#532721",
-          title: isEditMode ? "¡Producto Actualizado!" : "¡Café Actualizado!",
-          text: isEditMode ? "El producto se actualizó exitosamente." : "El producto y su imagen en la nube se guardaron exitosamente.",
+          title: wasEditMode ? "¡Producto Actualizado!" : "¡Café Registrado!",
+          text: wasEditMode ? "El producto se actualizó exitosamente." : "El producto y su imagen en la nube se guardaron exitosamente.",
           confirmButtonColor: "#B08D57",
           confirmButtonText: "Excelente",
         });
