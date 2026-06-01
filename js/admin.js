@@ -726,8 +726,13 @@ function deleteProduct(id) {
 async function loadProductForm() {
   try {
     const baseUrl = window.BASE_URL || '';
-    const response = await fetch(baseUrl + 'components/product/productForm.html');
-    if (!response.ok) throw new Error("No se pudo cargar el formulario");
+    const formUrl = baseUrl + 'components/product/productForm.html';
+    console.log(`[loadProductForm] Loading form from: ${formUrl}`);
+    const response = await fetch(formUrl);
+    if (!response.ok) {
+      console.error(`[loadProductForm] Failed to load form. Status: ${response.status}, URL: ${formUrl}`);
+      throw new Error("No se pudo cargar el formulario");
+    }
 
     const htmlFormulario = await response.text();
     const container = document.getElementById("productform-container");

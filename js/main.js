@@ -83,22 +83,43 @@ function fixComponentPaths(container) {
   }
   
   // Corregir links href
-  container.querySelectorAll('a[href^="/"]').forEach(link => {
+  container.querySelectorAll('a[href]').forEach(link => {
     const originalHref = link.getAttribute('href');
-    if (originalHref && originalHref.startsWith('/') && !originalHref.startsWith(BASE_URL)) {
-      const newHref = BASE_URL + originalHref.substring(1);
-      link.setAttribute('href', newHref);
-      console.log(`[fixComponentPaths] a href: ${originalHref} -> ${newHref}`);
+    if (originalHref && originalHref.startsWith('/')) {
+      const needsBasePath = !originalHref.startsWith(BASE_URL.slice(0, -1));
+      if (needsBasePath) {
+        const newHref = BASE_URL + originalHref.substring(1);
+        link.setAttribute('href', newHref);
+        console.log(`[fixComponentPaths] a href: ${originalHref} -> ${newHref}`);
+      }
     }
   });
   
   // Corregir imágenes - verificar el atributo src original
   container.querySelectorAll('img').forEach(img => {
     const originalSrc = img.getAttribute('src');
-    if (originalSrc && originalSrc.startsWith('/') && !originalSrc.startsWith(BASE_URL)) {
-      const newSrc = BASE_URL + originalSrc.substring(1);
-      img.setAttribute('src', newSrc);
-      console.log(`[fixComponentPaths] img: ${originalSrc} -> ${newSrc}`);
+    if (originalSrc && originalSrc.startsWith('/')) {
+      const needsBasePath = !originalSrc.startsWith(BASE_URL.slice(0, -1));
+      if (needsBasePath) {
+        const newSrc = BASE_URL + originalSrc.substring(1);
+        img.setAttribute('src', newSrc);
+        console.log(`[fixComponentPaths] img: ${originalSrc} -> ${newSrc}`);
+      }
+    }
+  });
+  
+  // Corregir enlaces en scripts (onclick, etc)
+  container.querySelectorAll('[href]').forEach(el => {
+    if (el.href && el.href.includes('/')) {
+      const href = el.href;
+      if (href.includes(BASE_URL.slice(0, -1)) === false && href.startsWith(window.location.origin + '/')) {
+        const pathOnly = href.replace(window.location.origin, '');
+        if (pathOnly.startsWith('/') && !pathOnly.startsWith(BASE_URL.slice(0, -1))) {
+          const newHref = window.location.origin + BASE_URL + pathOnly.substring(1);
+          el.href = newHref;
+          console.log(`[fixComponentPaths] [href]: ${href} -> ${newHref}`);
+        }
+      }
     }
   });
   
