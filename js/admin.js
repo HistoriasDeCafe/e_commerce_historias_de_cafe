@@ -24,7 +24,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   if (!user) {
     console.log('No user found, redirecting to login');
-    window.location.href = '/pages/users/users.html';
+    const baseUrl = window.BASE_URL || '';
+    window.location.href = baseUrl + 'pages/users/users.html';
     return;
   }
 
@@ -74,7 +75,12 @@ async function loadSidebar() {
     const baseUrl = window.BASE_URL || '';
     const response = await fetch(baseUrl + 'components/menuAdmin/menuAdmin.html');
     const html = await response.text();
-    document.getElementById('sidebar-container').innerHTML = html;
+    const container = document.getElementById('sidebar-container');
+    container.innerHTML = html;
+    // Fix paths for dynamically loaded components
+    if (typeof fixComponentPaths === 'function') {
+      fixComponentPaths(container);
+    }
     initializeSidebar();
   } catch (error) {
     console.error('Error loading sidebar:', error);
@@ -719,13 +725,18 @@ function deleteProduct(id) {
 // Load product form into modal
 async function loadProductForm() {
   try {
-    const response = await fetch('/components/product/productForm.html');
+    const baseUrl = window.BASE_URL || '';
+    const response = await fetch(baseUrl + 'components/product/productForm.html');
     if (!response.ok) throw new Error("No se pudo cargar el formulario");
 
     const htmlFormulario = await response.text();
     const container = document.getElementById("productform-container");
     if (container) {
       container.innerHTML = htmlFormulario;
+      // Fix paths for dynamically loaded components
+      if (typeof fixComponentPaths === 'function') {
+        fixComponentPaths(container);
+      }
       if (typeof initProductLogic === 'function') {
         initProductLogic();
       }

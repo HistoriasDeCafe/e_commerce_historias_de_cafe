@@ -116,7 +116,7 @@ function initCart() {
       div.innerHTML = `
         <div class="prod-info">
           <div class="prod-img-placeholder">
-            <img src="${item.imagen}" alt="${item.nombre}" onerror="this.src='/assets/img/iconoPepitaCafe-dark.svg'">
+            <img src="${item.imagen}" alt="${item.nombre}" onerror="this.src='${window.BASE_URL || ''}assets/img/iconoPepitaCafe-dark.svg'">
           </div>
           <div class="prod-detalles">
             <p class="prod-nombre">${item.nombre}</p>

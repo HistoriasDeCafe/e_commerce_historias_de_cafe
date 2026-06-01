@@ -327,7 +327,7 @@ function eliminarProducto(id) {
   }
 
   const producto = listaProductos.find(prod => (prod.idProduct || prod.id) === id);
-  const nombreDisplay = producto ? producto.name : "este producto";
+  const nombreDisplay = producto ? producto.nombre : "este producto";
 
   Swal.fire({
     title: '¿Estás seguro?',
