@@ -1,5 +1,5 @@
 // Estado de la aplicación para renderizar la tabla de administración
-let listaProductos = [];
+let productosList = [];
 let isEditMode = false;
 let productIdToEdit = null;
 let existingImageUrl = '';
@@ -451,8 +451,8 @@ async function cargarProductosDesdeBackend() {
 
     const productosRecuperados = await response.json();
     console.log("Productos recibidos del backend:", productosRecuperados);
-    listaProductos = productosRecuperados;
-    console.log("Lista de productos actualizada:", listaProductos);
+    productosList = productosRecuperados;
+    console.log("Lista de productos actualizada:", productosList);
     actualizarTabla();
   } catch (error) {
     console.error("Error cargando productos desde la API:", error);
