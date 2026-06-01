@@ -165,7 +165,7 @@ function initProductLogic() {
           price: parseFloat(precioInput.value),
           stock: parseInt(stockInput.value),
           categoryId: Number(regionInput.value),
-          imagen: imageUrl
+          image: imageUrl
         };
 
         console.log("Enviando payload al backend:", productoPayload);
@@ -285,7 +285,7 @@ function loadProductForEdit(product) {
   
   isEditMode = true;
   productIdToEdit = product.idProduct || product.id_product || product.id;
-  existingImageUrl = product.imagen || '';
+  existingImageUrl = product.image || '';
   
   // Update UI
   const formTitle = document.getElementById("form-title");

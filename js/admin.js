@@ -179,7 +179,7 @@ async function loadProductos() {
         descripcion: p.description || '',
         precio: p.price || 0,
         stock: p.stock || 0,
-        imagen: p.imagen || '',
+        image: p.image || '',
         estado: 'activo'
       }));
       
