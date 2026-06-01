@@ -312,7 +312,12 @@
           </div>
           <div class="form-group">
             <label>Contraseña <span id="password-hint">(dejar vacío para mantener actual)</span></label>
-            <input type="password" id="user-password" placeholder="Ingresa la contraseña">
+            <div class="password-input-wrapper">
+              <input type="password" id="user-password" placeholder="Ingresa la contraseña">
+              <button type="button" class="password-toggle-btn" id="toggle-password">
+                <i class="bi bi-eye" id="password-icon"></i>
+              </button>
+            </div>
           </div>
           <div class="form-group">
             <label>Rol</label>

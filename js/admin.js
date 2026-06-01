@@ -219,6 +219,8 @@ async function loadUsuarios() {
   try {
     const token = localStorage.getItem('authToken');
     console.log('[debug] decoded token (users):', decodeJwt(token));
+    console.log('Loading users from:', `${API_URL}/users`);
+    
     const response = await fetch(`${API_URL}/users`, {
       method: 'GET',
       headers: {
@@ -226,6 +228,8 @@ async function loadUsuarios() {
         'Authorization': `Bearer ${token}`
       }
     });
+
+    console.log('Users response status:', response.status);
 
     if (response.ok) {
       const users = await response.json();
@@ -236,6 +240,10 @@ async function loadUsuarios() {
         rol: u.role,
         estado: u.stateActive ? 'activo' : 'inactivo'
       }));
+    } else {
+      console.error('Failed to load users. Status:', response.status);
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
     }
   } catch (error) {
     console.error('Error loading users:', error);
@@ -611,6 +619,10 @@ function initializeEventListeners() {
   document.getElementById('btn-add-product').addEventListener('click', openAddProductModal);
   document.getElementById('btn-add-first-product').addEventListener('click', openAddProductModal);
 
+  // Add user buttons
+  document.getElementById('btn-add-user').addEventListener('click', openAddUserModal);
+  document.getElementById('btn-add-first-user').addEventListener('click', openAddUserModal);
+
   // Modal overlay click to close
   document.querySelectorAll('.modal-overlay').forEach(modal => {
     modal.addEventListener('click', (e) => {
@@ -622,6 +634,20 @@ function initializeEventListeners() {
 
   // User form submit
   document.getElementById('user-form').addEventListener('submit', handleUserSubmit);
+
+  // Password toggle
+  const togglePasswordBtn = document.getElementById('toggle-password');
+  const passwordInput = document.getElementById('user-password');
+  const passwordIcon = document.getElementById('password-icon');
+
+  if (togglePasswordBtn && passwordInput && passwordIcon) {
+    togglePasswordBtn.addEventListener('click', () => {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      passwordIcon.classList.toggle('bi-eye');
+      passwordIcon.classList.toggle('bi-eye-slash');
+    });
+  }
 }
 
 // Modal functions
@@ -650,6 +676,26 @@ function openAddProductModal() {
 
 function closeUserModal() {
   document.getElementById('modal-usuario').style.display = 'none';
+  // Reset form when closing
+  document.getElementById('user-form').reset();
+  document.getElementById('user-form').removeAttribute('data-userId');
+  document.getElementById('estado-group').style.display = 'none';
+  document.getElementById('password-hint').textContent = '(dejar vacío para mantener actual)';
+  document.getElementById('user-submit-text').textContent = 'Guardar Usuario';
+}
+
+function openAddUserModal() {
+  const modal = document.getElementById('modal-usuario');
+  if (modal) {
+    modal.style.display = 'flex';
+  }
+
+  // Reset form for new user
+  document.getElementById('user-form').reset();
+  document.getElementById('user-form').removeAttribute('data-userId');
+  document.getElementById('estado-group').style.display = 'none';
+  document.getElementById('password-hint').textContent = '';
+  document.getElementById('user-submit-text').textContent = 'Crear Usuario';
 }
 
 function closeOrderModal() {
@@ -792,10 +838,10 @@ function editUser(id) {
   }
 
   // Load user data into form
-  document.getElementById('user-nombre').value = user.name || user.fullName || '';
+  document.getElementById('user-nombre').value = user.nombre || '';
   document.getElementById('user-email').value = user.email || '';
-  document.getElementById('user-rol').value = user.role || 'CLIENT';
-  document.getElementById('user-estado').value = user.stateActive ? 'activo' : 'inactivo';
+  document.getElementById('user-rol').value = user.rol || 'CLIENT';
+  document.getElementById('user-estado').value = user.estado || 'activo';
   document.getElementById('estado-group').style.display = 'block';
   document.getElementById('password-hint').textContent = '(dejar vacío para mantener actual)';
   document.getElementById('user-submit-text').textContent = 'Actualizar Usuario';
@@ -810,43 +856,44 @@ function deleteUser(id) {
 
   Swal.fire({
     title: '¿Estás seguro?',
-    text: `Vas a eliminar "${user.name || user.fullName}" del sistema.`,
+    text: `Vas a desactivar "${user.nombre}" del sistema. El usuario permanecerá en la base de datos pero no podrá acceder.`,
     icon: 'warning',
     iconColor: '#d33',
     showCancelButton: true,
     confirmButtonColor: '#532721',
     cancelButtonColor: '#7a7a7a',
-    confirmButtonText: 'Sí, eliminar',
+    confirmButtonText: 'Sí, desactivar',
     cancelButtonText: 'Cancelar'
   }).then(async (result) => {
     if (result.isConfirmed) {
       try {
         const token = localStorage.getItem('authToken');
         const response = await fetch(`${API_URL}/users/${id}`, {
-          method: 'DELETE',
+          method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
-          }
+          },
+          body: JSON.stringify({ stateActive: false })
         });
 
         if (response.ok) {
           Swal.fire({
             icon: 'success',
-            title: 'Eliminado',
-            text: 'El usuario ha sido eliminado exitosamente.',
+            title: 'Desactivado',
+            text: 'El usuario ha sido desactivado exitosamente.',
             confirmButtonColor: '#532721'
           });
           await loadUsuarios();
           renderUsuariosTable();
         } else {
-          throw new Error('No se pudo eliminar el usuario');
+          throw new Error('No se pudo desactivar el usuario');
         }
       } catch (error) {
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'No se pudo eliminar el usuario. Intenta nuevamente.',
+          text: 'No se pudo desactivar el usuario. Intenta nuevamente.',
           confirmButtonColor: '#532721'
         });
       }
@@ -920,13 +967,31 @@ function handleUserSubmit(e) {
   };
   
   const password = document.getElementById('user-password').value;
+  
+  // Password is required for new users
+  if (!isEditMode && !password) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'La contraseña es obligatoria para crear un nuevo usuario.',
+      confirmButtonColor: '#532721'
+    });
+    return;
+  }
+  
   if (password) {
-    userData.password = password;
+    userData.passwordHash = password;
   }
   
   const token = localStorage.getItem('authToken');
-  const method = isEditMode ? 'PUT' : 'POST';
+  const method = isEditMode ? 'PATCH' : 'POST';
   const url = isEditMode ? `${API_URL}/users/${userId}` : `${API_URL}/users`;
+  
+  console.log('User submit - Mode:', isEditMode ? 'EDIT' : 'CREATE');
+  console.log('User submit - URL:', url);
+  console.log('User submit - Method:', method);
+  console.log('User submit - userData:', userData);
+  console.log('User submit - userId:', userId);
   
   Swal.fire({
     title: isEditMode ? 'Actualizando usuario...' : 'Creando usuario...',
@@ -945,7 +1010,14 @@ function handleUserSubmit(e) {
     body: JSON.stringify(userData)
   })
   .then(response => {
-    if (!response.ok) throw new Error('No se pudo guardar el usuario');
+    console.log('User submit - Response status:', response.status);
+    if (!response.ok) {
+      console.error('User submit - Response not OK');
+      return response.text().then(text => {
+        console.error('User submit - Error response:', text);
+        throw new Error('No se pudo guardar el usuario');
+      });
+    }
     return response.json();
   })
   .then(data => {

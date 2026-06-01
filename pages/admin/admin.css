@@ -544,6 +544,8 @@ body {
   font-size: 0.95rem;
   transition: all 0.3s ease;
   background: #fafafa;
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .form-group input:focus,
@@ -558,6 +560,11 @@ body {
   color: #999;
 }
 
+.form-group input:hover,
+.form-group select:hover {
+  border-color: #d0d0d0;
+}
+
 .form-group select {
   cursor: pointer;
   appearance: none;
@@ -565,6 +572,39 @@ body {
   background-repeat: no-repeat;
   background-position: right 15px center;
   padding-right: 40px;
+}
+
+/* Password input with toggle button */
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  padding-right: 50px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+
+.password-toggle-btn:hover {
+  color: var(--color-secondary, #B08D57);
+}
+
+.password-toggle-btn i {
+  font-size: 1.1rem;
 }
 
 /* ==================== PAGINACIÓN ==================== */
