@@ -774,13 +774,84 @@ async function loadProductForm() {
 }
 
 function editUser(id) {
-  console.log('Edit user:', id);
-  // TODO: Implement edit user logic
+  const user = listaUsuarios.find(u => u.id === id);
+  if (!user) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'No se encontró el usuario',
+      confirmButtonColor: '#532721'
+    });
+    return;
+  }
+
+  // Open modal
+  const modal = document.getElementById('modal-usuario');
+  if (modal) {
+    modal.style.display = 'flex';
+  }
+
+  // Load user data into form
+  document.getElementById('user-nombre').value = user.name || user.fullName || '';
+  document.getElementById('user-email').value = user.email || '';
+  document.getElementById('user-rol').value = user.role || 'CLIENT';
+  document.getElementById('user-estado').value = user.stateActive ? 'activo' : 'inactivo';
+  document.getElementById('estado-group').style.display = 'block';
+  document.getElementById('password-hint').textContent = '(dejar vacío para mantener actual)';
+  document.getElementById('user-submit-text').textContent = 'Actualizar Usuario';
+
+  // Store user ID for update
+  document.getElementById('user-form').dataset.userId = id;
 }
 
 function deleteUser(id) {
-  console.log('Delete user:', id);
-  // TODO: Implement delete user logic
+  const user = listaUsuarios.find(u => u.id === id);
+  if (!user) return;
+
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: `Vas a eliminar "${user.name || user.fullName}" del sistema.`,
+    icon: 'warning',
+    iconColor: '#d33',
+    showCancelButton: true,
+    confirmButtonColor: '#532721',
+    cancelButtonColor: '#7a7a7a',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch(`${API_URL}/users/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Eliminado',
+            text: 'El usuario ha sido eliminado exitosamente.',
+            confirmButtonColor: '#532721'
+          });
+          await loadUsuarios();
+          renderUsuariosTable();
+        } else {
+          throw new Error('No se pudo eliminar el usuario');
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo eliminar el usuario. Intenta nuevamente.',
+          confirmButtonColor: '#532721'
+        });
+      }
+    }
+  });
 }
 
 function viewOrderDetails(id) {
@@ -837,6 +908,62 @@ function viewOrderDetails(id) {
 
 function handleUserSubmit(e) {
   e.preventDefault();
-  console.log('User form submitted');
-  // TODO: Implement user save logic
+  
+  const userId = document.getElementById('user-form').dataset.userId;
+  const isEditMode = userId !== undefined;
+  
+  const userData = {
+    name: document.getElementById('user-nombre').value.trim(),
+    email: document.getElementById('user-email').value.trim(),
+    role: document.getElementById('user-rol').value,
+    stateActive: document.getElementById('user-estado').value === 'activo'
+  };
+  
+  const password = document.getElementById('user-password').value;
+  if (password) {
+    userData.password = password;
+  }
+  
+  const token = localStorage.getItem('authToken');
+  const method = isEditMode ? 'PUT' : 'POST';
+  const url = isEditMode ? `${API_URL}/users/${userId}` : `${API_URL}/users`;
+  
+  Swal.fire({
+    title: isEditMode ? 'Actualizando usuario...' : 'Creando usuario...',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
+  
+  fetch(url, {
+    method: method,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(userData)
+  })
+  .then(response => {
+    if (!response.ok) throw new Error('No se pudo guardar el usuario');
+    return response.json();
+  })
+  .then(data => {
+    Swal.fire({
+      icon: 'success',
+      title: isEditMode ? 'Actualizado' : 'Creado',
+      text: isEditMode ? 'El usuario ha sido actualizado exitosamente.' : 'El usuario ha sido creado exitosamente.',
+      confirmButtonColor: '#532721'
+    });
+    closeUserModal();
+    loadUsuarios().then(() => renderUsuariosTable());
+  })
+  .catch(error => {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'No se pudo guardar el usuario. Intenta nuevamente.',
+      confirmButtonColor: '#532721'
+    });
+  });
 }
