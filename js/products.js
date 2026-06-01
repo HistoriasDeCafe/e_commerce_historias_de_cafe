@@ -243,7 +243,7 @@ function initProductLogic() {
         Swal.fire({
           icon: "success",
           iconColor: "#532721",
-          title: isEditMode ? "¡Producto Actualizado!" : "¡Café Registrado!",
+          title: isEditMode ? "¡Producto Actualizado!" : "¡Café Actualizado!",
           text: isEditMode ? "El producto se actualizó exitosamente." : "El producto y su imagen en la nube se guardaron exitosamente.",
           confirmButtonColor: "#B08D57",
           confirmButtonText: "Excelente",
