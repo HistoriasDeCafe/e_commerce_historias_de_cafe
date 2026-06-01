@@ -19,16 +19,29 @@ async function cargarProductosBackend() {
     
     const listaProductos = await response.json();
     
-    productosBackend = listaProductos.map(prod => ({
-      id: prod.idProduct || prod.id_product || prod.id,
-      nombre: prod.name || "Café Premium",
-      origen: prod.origin || prod.categoryName || "Región Origen",
-      descripcion: prod.description || "Sin descripción disponible.",
-      precio: prod.price || 0,
-      image: prod.image || '/assets/img/iconoPepitaCafe-dark.svg'
-    }));
+    console.log('=== DEBUG PRODUCTOS DEL BACKEND ===');
+    console.log('Total productos:', listaProductos.length);
+    if (listaProductos.length > 0) {
+      console.log('Primer producto completo:', JSON.stringify(listaProductos[0], null, 2));
+    }
     
-    console.log('Productos cargados:', productosBackend);
+    productosBackend = listaProductos.map(prod => {
+      // El backend devuelve en el campo "image"
+      const imageUrl = prod.image || '/assets/img/iconoPepitaCafe-dark.svg';
+      
+      console.log(`Producto: ${prod.name || 'Sin nombre'} -> image: "${imageUrl}"`);
+      
+      return {
+        id: prod.idProduct || prod.id_product || prod.id,
+        nombre: prod.name || "Café Premium",
+        origen: prod.origin || prod.categoryName || "Región Origen",
+        descripcion: prod.description || "Sin descripción disponible.",
+        precio: prod.price || 0,
+        image: imageUrl
+      };
+    });
+    
+    console.log('Productos procesados:', productosBackend);
     
     // Hide loading state
     if (loadingState) {
@@ -83,7 +96,7 @@ function renderizarCatalogo() {
     const cardHTML = `
       <article class="card" data-product-id="${product.id}">
         <div class="image-placeholder">
-          <img src="${product.imagen}" alt="${product.nombre}" onerror="this.src='/assets/img/iconoPepitaCafe-dark.svg'">
+          <img src="${product.image}" alt="${product.nombre}" onerror="this.src='/assets/img/iconoPepitaCafe-dark.svg'">
         </div>
         <div class="card-content">
           <h3 class="product-name">${product.nombre}</h3>
