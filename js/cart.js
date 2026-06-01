@@ -59,7 +59,7 @@ function initCart() {
   // 5. AGREGAR AL CARRITO
   // =========================================================
   function agregarAlCarrito(producto) {
-    const { id, nombre, precio, imagenn } = producto;
+    const { id, nombre, precio, image } = producto;
     
     const itemExistente = items.find(item => item.nombre === nombre);
 
@@ -70,7 +70,7 @@ function initCart() {
         id: id,
         nombre: nombre,
         precio: precio,
-        imagenn: imagnen,
+        image: image,
         cantidad: 1
       });
     }
@@ -116,7 +116,7 @@ function initCart() {
       div.innerHTML = `
         <div class="prod-info">
           <div class="prod-img-placeholder">
-            <img src="${item.imagen}" alt="${item.nombre}" onerror="this.src='/assets/img/iconoPepitaCafe-dark.svg'">
+            <img src="${item.image}" alt="${item.nombre}" onerror="this.src='/assets/img/iconoPepitaCafe-dark.svg'">
           </div>
           <div class="prod-detalles">
             <p class="prod-nombre">${item.nombre}</p>
@@ -196,6 +196,10 @@ function initCart() {
     const item = items.find(i => i.nombre === nombre);
     if (!item) return;
 
+    // Cerrar el carrito para que el alert sea visible
+    carritoLateral.classList.remove('abierto');
+    carritoOverlay.classList.remove('activo');
+
     Swal.fire({
       title: "¿Eliminar producto?",
       html: `¿Deseas quitar <strong>${nombre}</strong> del carrito?`,
@@ -204,7 +208,8 @@ function initCart() {
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "Cancelar",
       confirmButtonColor: "#dc3545",
-      cancelButtonColor: "#6c757d"
+      cancelButtonColor: "#6c757d",
+      zIndex: 10001
     }).then((result) => {
       if (result.isConfirmed) {
         cantidadItems -= item.cantidad;
