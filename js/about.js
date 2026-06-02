@@ -11,7 +11,7 @@ const equipo = [
   },
   {
     nombre: "Andrés Díaz Figueroa",
-    rol: "Java Full Stack Junior",
+    rol: "Java Full Stack & Cloud Developer",
     descripcion: "Apasionado por la tecnología, el desarrollo de software y la arquitectura cloud.",
     foto: window.BASE_URL ? window.BASE_URL + "assets/img/fotoAndres-removebg-preview.png" : "../../assets/img/fotoAndres-removebg-preview.png",
     linkedin: "https://www.linkedin.com/in/andres-diaz-figueroa-tecnology-innovation-developer-cloud/",
