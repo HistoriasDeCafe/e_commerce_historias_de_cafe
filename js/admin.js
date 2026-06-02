@@ -79,6 +79,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize event listeners
   initializeEventListeners();
   
+  // Auto-refresh orders every 30 seconds
+  setInterval(async () => {
+    console.log('[ADMIN] Auto-refreshing orders...');
+    await loadOrdenes();
+    renderOrdenesTable();
+    updateDashboardStats();
+  }, 30000);
+  
   console.log('Admin initialization complete');
 });
 
@@ -255,6 +263,8 @@ async function loadOrdenes() {
   try {
     const token = localStorage.getItem('authToken');
     console.log('[debug] decoded token (orders):', decodeJwt(token));
+    console.log('[ADMIN] Loading orders from:', `${API_URL}/orders`);
+    
     const response = await fetch(`${API_URL}/orders`, {
       method: 'GET',
       headers: {
@@ -263,8 +273,13 @@ async function loadOrdenes() {
       }
     });
 
+    console.log('[ADMIN] Orders response status:', response.status);
+
     if (response.ok) {
       const orders = await response.json();
+      console.log('[ADMIN] Raw orders from API:', orders);
+      console.log('[ADMIN] Number of orders:', orders.length);
+      
       listaOrdenes = orders.map(o => ({
         id: o.id,
         userId: o.userId,
@@ -274,9 +289,15 @@ async function loadOrdenes() {
         orderDate: o.orderDate,
         details: o.details || []
       }));
+      
+      console.log('[ADMIN] Mapped listaOrdenes:', listaOrdenes);
+    } else {
+      console.error('[ADMIN] Failed to load orders. Status:', response.status);
+      const errorText = await response.text();
+      console.error('[ADMIN] Error response:', errorText);
     }
   } catch (error) {
-    console.error('Error loading orders:', error);
+    console.error('[ADMIN] Error loading orders:', error);
   }
 }
 

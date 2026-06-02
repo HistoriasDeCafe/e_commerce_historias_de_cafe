@@ -15,7 +15,6 @@ function initCart() {
   const subtotalValor = document.querySelector('#subtotal-valor');
   const conteoProductos = document.querySelector('.conteo-productos');
   const btnPagar = document.querySelector('.btn-pagar');
-  const badgeNav = document.getElementById('conteo-productos-nav');
   const notasPedido = document.getElementById('notas-pedido');
 
   carritoItems.innerHTML = '';
@@ -32,8 +31,11 @@ function initCart() {
       conteoProductos.textContent = cantidadItems === 1 ? '1 producto' : `${cantidadItems} productos`;
     }
 
+    // Try to get badge again in case it wasn't loaded initially
+    const badgeNav = document.getElementById('conteo-productos-nav');
     if (badgeNav) {
       badgeNav.textContent = cantidadItems;
+      badgeNav.style.display = cantidadItems > 0 ? 'flex' : 'none';
     }
   }
 
@@ -59,12 +61,18 @@ function initCart() {
   // 5. AGREGAR AL CARRITO
   // =========================================================
   function agregarAlCarrito(producto) {
+    console.log('[CART] agregarAlCarrito llamado para:', producto.nombre);
+    console.log('[CART] cantidadItems antes:', cantidadItems);
+    console.log('[CART] precio recibido:', producto.precio);
+    console.log('[CART] tipo de precio:', typeof producto.precio);
+    
     const { id, nombre, precio, image } = producto;
     
     const itemExistente = items.find(item => item.nombre === nombre);
 
     if (itemExistente) {
       itemExistente.cantidad += 1;
+      console.log('[CART] Item existente, nueva cantidad:', itemExistente.cantidad);
     } else {
       items.push({
         id: id,
@@ -73,10 +81,15 @@ function initCart() {
         image: image,
         cantidad: 1
       });
+      console.log('[CART] Nuevo item agregado con precio:', precio);
     }
 
     cantidadItems += 1;
     totalAcumulado += precio;
+
+    console.log('[CART] cantidadItems después:', cantidadItems);
+    console.log('[CART] total items en array:', items.length);
+    console.log('[CART] totalAcumulado:', totalAcumulado);
 
     guardarCarritoStorage();
     renderizarCarrito();
@@ -459,31 +472,31 @@ function initCart() {
   // =========================================================
   // 10. BOTONES DEL CATÁLOGO
   // =========================================================
-  function adjuntarBotonesCarrito() {
-    document.querySelectorAll('.add-to-cart-btn').forEach(boton => {
-      if (boton.dataset.cartReady) return;
-      boton.dataset.cartReady = 'true';
+  // Single event delegation for all add-to-cart buttons
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.add-to-cart-btn');
+    if (!btn) return;
+    
+    e.stopPropagation();
+    e.preventDefault();
+    
+    const productId = btn.dataset.productId;
+    const card = btn.closest('.card');
+    
+    if (!card) return;
+    
+    const nombre = card.querySelector('.product-name')?.textContent.trim();
+    const precioTexto = card.querySelector('.product-price')?.textContent.replace('$', '').replace(/\./g, '').replace(/,/g, '').trim();
+    const precio = parseFloat(precioTexto);
+    const image = card.querySelector('img')?.src || '/assets/img/iconoPepitaCafe-dark.svg';
 
-      boton.addEventListener('click', (e) => {
-        const productId = e.currentTarget.dataset.productId;
-        const card = e.currentTarget.closest('.card');
-        
-        const nombre = card.querySelector('.product-name')?.textContent.trim();
-        const origen = card.querySelector('.product-origin')?.textContent.trim();
-        const descripcion = card.querySelector('.product-description')?.textContent.trim();
-        const precioTexto = card.querySelector('.product-price')?.textContent.replace('$', '').replace(/\./g, '').trim();
-        const precio = parseFloat(precioTexto);
-        const image = card.querySelector('img')?.src || '/assets/img/iconoPepitaCafe-dark.svg';
-
-        agregarAlCarrito({
-          id: productId,
-          nombre: nombre,
-          precio: precio,
-          image: image
-        });
-      });
+    agregarAlCarrito({
+      id: productId,
+      nombre: nombre,
+      precio: precio,
+      image: image
     });
-  }
+  });
 
   // =========================================================
   // 11. INICIALIZACIÓN
@@ -491,9 +504,6 @@ function initCart() {
   if (btnPagar) {
     btnPagar.addEventListener('click', irAPagar);
   }
-
-  adjuntarBotonesCarrito();
-  document.addEventListener('catalogoListo', adjuntarBotonesCarrito);
 
   // Cargar desde storage
   if (carritoGuardado.length > 0) {

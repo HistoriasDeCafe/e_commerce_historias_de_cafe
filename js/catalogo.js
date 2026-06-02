@@ -115,42 +115,8 @@ function renderizarCatalogo() {
     contenedor.innerHTML += cardHTML;
   });
   
-  // Add event listeners to add-to-cart buttons
-  document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const productId = e.currentTarget.dataset.productId;
-      const product = productosBackend.find(p => p.id == productId);
-      if (product) {
-        agregarAlCarrito(product);
-      }
-    });
-  });
-  
   // Notify cart that catalog is ready
   document.dispatchEvent(new CustomEvent('catalogoListo'));
-}
-
-function agregarAlCarrito(producto) {
-  console.log("Agregando:", producto.nombre);
-  
-  // Check if cart function exists
-  if (typeof window.addToCart === 'function') {
-    window.addToCart(producto);
-  } else {
-    // Fallback: dispatch custom event
-    const event = new CustomEvent('add-to-cart', { detail: producto });
-    document.dispatchEvent(event);
-  }
-  
-  Swal.fire({
-    icon: 'success',
-    iconColor: '#532721',
-    title: '¡Producto agregado!',
-    text: `${producto.nombre} se ha añadido a tu carretilla cafetera.`,
-    confirmButtonColor: '#532721',
-    timer: 2000,
-    showConfirmButton: false
-  });
 }
 
 // Initialize on DOMContentLoaded

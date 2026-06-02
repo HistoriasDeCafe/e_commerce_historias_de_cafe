@@ -26,23 +26,6 @@ function renderProductCard(product, container) {
   `;
   
   container.insertAdjacentHTML('beforeend', cardTemplate);
-  
-  // Add event listener to the new card's add-to-cart button
-  const newCard = container.lastElementChild;
-  const addToCartBtn = newCard.querySelector('.add-to-cart-btn');
-  if (addToCartBtn) {
-    addToCartBtn.addEventListener('click', () => {
-      // Emit add-to-cart event
-      if (typeof window.addToCart === 'function') {
-        window.addToCart(product);
-      } else {
-        console.log('Add to cart:', product);
-        // Fallback: dispatch custom event
-        const event = new CustomEvent('add-to-cart', { detail: product });
-        document.dispatchEvent(event);
-      }
-    });
-  }
 }
 
 // Function to render multiple product cards

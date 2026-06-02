@@ -413,6 +413,7 @@
   align-items: center;
   margin: 1rem 0 1.5rem;
   font-size: 1rem;
+  padding: 0 0.5rem;
 }
 
 .subtotal-section span {
@@ -423,12 +424,9 @@
 
 .subtotal-section strong {
   color: #532721;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #532721 0%, #3e1f1a 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  white-space: nowrap;
 }
 
 .btn-pagar {
