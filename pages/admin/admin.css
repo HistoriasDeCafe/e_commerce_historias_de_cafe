@@ -484,7 +484,7 @@ body {
 
 .modal-header {
   background: linear-gradient(135deg, var(--color-primary, #532721) 0%, var(--color-secondary, #B08D57) 100%);
-  padding: 25px 30px;
+  padding: 25px 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -519,7 +519,7 @@ body {
 }
 
 .modal-body {
-  padding: 30px;
+  padding: 25px 30px 30px;
 }
 
 /* ==================== FORMULARIOS ==================== */
