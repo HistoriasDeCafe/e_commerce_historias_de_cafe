@@ -12,15 +12,25 @@ body {
   font-family: "Segoe UI", sans-serif;
   margin: 0;
   background: var(--bg-main);
+  overflow-x: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 .dashboard-container {
   display: flex;
   min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .main-content {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   background: var(--bg-main);
@@ -33,6 +43,7 @@ body {
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #ddd;
+  gap: 12px;
 }
 
 .toggle-btn {
@@ -51,6 +62,8 @@ body {
 
 .content-padding {
   padding: 25px;
+  width: 100%;
+  min-width: 0;
 }
 
 /* ==================== DASHBOARD HEADER ==================== */
@@ -144,6 +157,8 @@ body {
   margin-bottom: 20px;
   padding-bottom: 10px;
   border-bottom: 2px solid #f4f0ea;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .table-header-container h3 {
@@ -155,6 +170,7 @@ body {
 
 .table {
   width: 100%;
+  min-width: 720px;
   border-collapse: separate;
   border-spacing: 0;
   margin-top: 5px;
@@ -466,6 +482,7 @@ body {
   display: none;
   justify-content: center;
   align-items: center;
+  padding: 16px;
   animation: fadeInOverlay 0.3s ease-out;
 }
 
@@ -473,7 +490,8 @@ body {
   background: white;
   width: 90%;
   max-width: 550px;
-  margin: 5% auto;
+  max-height: calc(100vh - 32px);
+  margin: 0 auto;
   padding: 0;
   border-radius: 16px;
   position: relative;
@@ -520,6 +538,8 @@ body {
 
 .modal-body {
   padding: 25px 30px 30px;
+  max-height: calc(100vh - 130px);
+  overflow-y: auto;
 }
 
 /* ==================== FORMULARIOS ==================== */
@@ -615,6 +635,7 @@ body {
   margin-top: 20px;
   padding-top: 20px;
   border-top: 1px solid #e0e0e0;
+  gap: 16px;
 }
 
 .pagination-info {
@@ -717,6 +738,7 @@ body {
   padding: 10px;
   background: #f9f9f9;
   border-radius: 6px;
+  gap: 12px;
 }
 
 .activity-time {
@@ -742,6 +764,7 @@ body {
   padding: 12px;
   background: #f9f9f9;
   border-radius: 6px;
+  gap: 12px;
 }
 
 .featured-item .badge {
@@ -780,6 +803,7 @@ body {
 .table-container {
   width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* ==================== RESPONSIVE ==================== */
@@ -794,8 +818,27 @@ body {
 }
 
 @media (max-width: 768px) {
+  .top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 900;
+    padding: 12px 16px;
+  }
+
+  .top-bar .fw-bold {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .content-padding {
+    padding: 16px;
+  }
+
   .stats-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
   
   .dashboard-widgets {
@@ -803,7 +846,8 @@ body {
   }
   
   .table-section {
-    padding: 16px;
+    padding: 14px;
+    border-radius: 10px;
   }
   
   .table {
@@ -821,11 +865,100 @@ body {
   
   .table-header-container {
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
     align-items: stretch;
   }
   
   .dashboard-header h2 {
     font-size: 1.5rem;
+  }
+
+  .welcome-text {
+    font-size: 1rem;
+  }
+
+  .pagination-container,
+  .pagination-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pagination-info,
+  .pagination-pages {
+    text-align: center;
+  }
+
+  .pagination-btn {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .activity-item,
+  .featured-item,
+  .detail-row,
+  .product-detail-info {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .modal-overlay {
+    align-items: flex-start;
+    padding: 12px;
+    overflow-y: auto;
+  }
+
+  .modal-content {
+    width: 100%;
+    max-height: none;
+    border-radius: 12px;
+  }
+
+  .modal-header {
+    padding: 18px 16px;
+    gap: 12px;
+  }
+
+  .modal-header h3 {
+    font-size: 1.2rem;
+    min-width: 0;
+  }
+
+  .modal-body {
+    padding: 18px 16px 22px;
+    max-height: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .content-padding {
+    padding: 12px;
+  }
+
+  .stat-card,
+  .widget-card {
+    padding: 16px;
+  }
+
+  .table-section {
+    padding: 12px;
+  }
+
+  .table {
+    min-width: 640px;
+  }
+
+  .table th,
+  .table td {
+    padding: 9px 7px;
+  }
+
+  .actions-wrapper {
+    align-items: stretch;
+  }
+
+  .btn-table-edit,
+  .btn-table-delete {
+    justify-content: center;
+    width: 100%;
   }
 }

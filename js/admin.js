@@ -111,6 +111,16 @@ async function loadSidebar() {
 // Initialize sidebar navigation
 function initializeSidebar() {
   const menuItems = document.querySelectorAll('.sidebar nav ul li');
+  const sidebar = document.querySelector('.sidebar');
+  let sidebarOverlay = document.querySelector('.sidebar-overlay');
+
+  if (!sidebarOverlay) {
+    sidebarOverlay = document.createElement('div');
+    sidebarOverlay.className = 'sidebar-overlay';
+    document.body.appendChild(sidebarOverlay);
+  }
+
+  sidebarOverlay.addEventListener('click', closeMobileSidebar);
   
   menuItems.forEach(item => {
     item.addEventListener('click', () => {
@@ -133,9 +143,15 @@ function initializeSidebar() {
 
       if (view) {
         switchView(view);
+        closeMobileSidebar();
       }
     });
   });
+
+  function closeMobileSidebar() {
+    sidebar?.classList.remove('active');
+    sidebarOverlay?.classList.remove('active');
+  }
 }
 
 // Switch between views
@@ -573,7 +589,16 @@ function formatCurrency(amount) {
 function initializeEventListeners() {
   // Toggle sidebar
   document.querySelector('.toggle-btn').addEventListener('click', () => {
-    document.querySelector('.sidebar').classList.toggle('collapsed');
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarOverlay = document.querySelector('.sidebar-overlay');
+
+    if (window.innerWidth <= 768) {
+      sidebar.classList.toggle('active');
+      sidebarOverlay?.classList.toggle('active', sidebar.classList.contains('active'));
+      return;
+    }
+
+    sidebar.classList.toggle('collapsed');
   });
 
   // Product pagination

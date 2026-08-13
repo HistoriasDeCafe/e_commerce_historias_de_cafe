@@ -8,6 +8,9 @@
   min-height: 100vh;
   padding: 25px 20px;
   box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  flex: 0 0 260px;
+  overflow-y: auto;
 }
 
 .logo-section {
@@ -93,10 +96,13 @@ nav ul li:hover i {
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
-    left: -260px;
-    width: 260px;
-    padding: 25px 20px;
-    z-index: 1000;
+    top: 0;
+    left: -100%;
+    width: min(82vw, 280px);
+    height: 100dvh;
+    min-height: 100vh;
+    padding: 18px 16px;
+    z-index: 1100;
     transition: left 0.3s ease;
   }
   
@@ -105,13 +111,13 @@ nav ul li:hover i {
   }
   
   .logo-section {
-    padding: 2rem 1rem;
-    border-radius: 12px;
+    padding: 1.25rem 0.75rem;
+    border-radius: 10px;
   }
   
   .logo-section img {
-    width: 160px;
-    height: 160px;
+    width: 120px;
+    height: 120px;
   }
   
   .logo-section span {
@@ -124,7 +130,7 @@ nav ul li:hover i {
   
   nav ul li {
     justify-content: flex-start;
-    padding: 14px 18px;
+    padding: 12px 14px;
     gap: 1rem;
   }
   
@@ -150,7 +156,7 @@ nav ul li:hover i {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
+    z-index: 1090;
   }
   
   .sidebar-overlay.active {
